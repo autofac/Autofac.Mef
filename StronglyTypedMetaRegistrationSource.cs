@@ -87,7 +87,7 @@ namespace Autofac.Integration.Mef
             var rb = RegistrationBuilder
                 .ForDelegate((c, p) => new Meta<T, TMetadata>(
                     (T)c.ResolveComponent(valueRegistration, p),
-                    MetadataViewBuilder.GetMetadataView<TMetadata>(valueRegistration.Target.Metadata)))
+                    AttributedModelServices.GetMetadataView<TMetadata>(valueRegistration.Target.Metadata)))
                 .As(providedService)
                 .Targeting(valueRegistration);
 
