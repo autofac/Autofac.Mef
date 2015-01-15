@@ -13,7 +13,7 @@ REM Build
 if not "%errorlevel%"=="0" goto failure
 
 REM Unit tests
-%GallioEcho% tests\Autofac.Tests.Integration.Mef\bin\%config%\Autofac.Tests.Integration.Mef.dll
+"%GallioEcho%" tests\Autofac.Tests.Integration.Mef\bin\%config%\Autofac.Tests.Integration.Mef.dll
 if not "%errorlevel%"=="0" goto failure
 
 REM Package
