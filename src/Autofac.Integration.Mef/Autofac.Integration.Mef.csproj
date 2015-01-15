@@ -110,6 +110,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Autofac.Integration.Mef.nuspec" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" Condition="($(MSBuildTargets) == '') Or ($(MSBuildTargets) == 'CSharp')" />

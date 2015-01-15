@@ -18,7 +18,8 @@ using System.Security;
 [assembly: NeutralResourcesLanguage("en")]
 
 [assembly: AssemblyVersion("3.0.0.0")]
-[assembly: AssemblyFileVersion("3.0.2.0")]
-[assembly: AssemblyConfiguration("Release built on 2014-01-07 21:40")]
+[assembly: AssemblyFileVersion("3.0.3.0")]
+[assembly: AssemblyInformationalVersion("3.0.3")]
+[assembly: AssemblyConfiguration("Release")]
 [assembly: AssemblyCopyright("Copyright © 2014 Autofac Contributors")]
-[assembly: AssemblyDescription("Autofac.Mef 3.0.2")]
+[assembly: AssemblyDescription("Autofac.Mef 3.0.3")]
