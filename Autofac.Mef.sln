@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Autofac.Integration.Mef", "src\Autofac.Integration.Mef\Autofac.Integration.Mef.csproj", "{DEF93D8F-91B1-42C4-967C-43DB609447CA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Autofac.Tests.Integration.Mef", "tests\Autofac.Tests.Integration.Mef\Autofac.Tests.Integration.Mef.csproj", "{67AAF374-86A2-47C9-B522-721A94073450}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DEF93D8F-91B1-42C4-967C-43DB609447CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DEF93D8F-91B1-42C4-967C-43DB609447CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DEF93D8F-91B1-42C4-967C-43DB609447CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DEF93D8F-91B1-42C4-967C-43DB609447CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{67AAF374-86A2-47C9-B522-721A94073450}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{67AAF374-86A2-47C9-B522-721A94073450}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{67AAF374-86A2-47C9-B522-721A94073450}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{67AAF374-86A2-47C9-B522-721A94073450}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
