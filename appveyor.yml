@@ -12,5 +12,13 @@ configuration: Release
 before_build: nuget restore
 
 build:
-  publish_nuget: true             # package projects with .nuspec files and push to artifacts
-  publish_nuget_symbols: true     # generate and publish NuGet symbol packages
+  verbosity: minimal
+  publish_nuget: true
+  publish_nuget_symbols: true
+
+deploy:
+- provider: NuGet
+  server: https://www.myget.org/F/autofac/
+  api_key:
+    secure: po0Rep+BsbvwbbM9mjLwYQ7rw6lVvc5sB6L+LgeKRY8W+89k386kkeSO/tttgzGi
+  symbol_server: https://nuget.symbolsource.org/MyGet/autofac
