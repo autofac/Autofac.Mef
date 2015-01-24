@@ -8,3 +8,5 @@ assembly_info:
   assembly_informational_version: "3.0.3"
 
 configuration: Release
+
+before_build: nuget restore
