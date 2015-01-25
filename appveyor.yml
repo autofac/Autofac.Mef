@@ -1,7 +1,7 @@
 version: 3.0.3.{build}
 
 environment:
-  NUGET_PACKAGE_VERSION: "3.0.3-CI-{build}"
+  NUGET_PACKAGE_VERSION: "3.0.3-CI-%APPVEYOR_BUILD_NUMBER%"
 
 assembly_info:
   patch: true
