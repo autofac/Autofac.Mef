@@ -1,14 +1,11 @@
 version: 3.0.3.{build}
 
-environment:
-  NUGET_PACKAGE_VERSION: "3.0.3-CI-%APPVEYOR_BUILD_NUMBER%"
-
 assembly_info:
   patch: true
   file: AssemblyInfo.cs
   assembly_version: "3.0.0.0"
   assembly_file_version: "{version}"
-  assembly_informational_version: "{version}"
+  assembly_informational_version: "3.0.3-CI-{build}"
 
 configuration: Release
 
@@ -16,15 +13,8 @@ before_build: nuget restore
 
 build:
   verbosity: minimal
-  publish_nuget: false
-  publish_nuget_symbols: false
-
-after_build:
-  - cmd: nuget pack src\Autofac.Integration.Mef\Autofac.Integration.Mef.nuspec -Symbols -Properties Configuration=%CONFIGURATION%;Platform=AnyCPU -Version %NUGET_PACKAGE_VERSION%
-
-artifacts:
- - path: Autofac.Mef*.nupkg
-   name: NuGet
+  publish_nuget: true
+  publish_nuget_symbols: true
 
 deploy:
 - provider: NuGet
