@@ -1,19 +1,18 @@
 ﻿using System;
 using System.ComponentModel.Composition;
 using Autofac.Core;
-using Autofac.Features.Metadata;
 using Autofac.Integration.Mef;
 using Xunit;
 
-namespace Autofac.Tests.Integration.Mef
+namespace Autofac.Integration.Mef.Test
 {
-    public class StronglyTypedMetadataWhenMetadataIsSuppliedTests
+    public class LazyWithMetadataWhenMetadataIsSuppliedTests
     {
         const int SuppliedValue = 123;
 
         IContainer _container;
 
-        public StronglyTypedMetadataWhenMetadataIsSuppliedTests()
+        public LazyWithMetadataWhenMetadataIsSuppliedTests()
         {
             var builder = new ContainerBuilder();
             builder.RegisterMetadataRegistrationSources();
@@ -24,22 +23,22 @@ namespace Autofac.Tests.Integration.Mef
         [Fact]
         public void ValuesAreProvidedFromMetadata()
         {
-            var meta = _container.Resolve<Meta<object, IMeta>>();
-            Assert.Equal((int)SuppliedValue, (int)meta.Metadata.TheInt);
+            var meta = _container.Resolve<Lazy<object, IMeta>>();
+            Assert.Equal(SuppliedValue, meta.Metadata.TheInt);
         }
 
         [Fact]
         public void ValuesProvidedFromMetadataOverrideDefaults()
         {
-            var meta = _container.Resolve<Meta<object, IMetaWithDefault>>();
-            Assert.Equal((int)SuppliedValue, (int)meta.Metadata.TheInt);
+            var meta = _container.Resolve<Lazy<object, IMetaWithDefault>>();
+            Assert.Equal(SuppliedValue, meta.Metadata.TheInt);
         }
 
         [Fact]
         public void ValuesBubbleUpThroughAdapters()
         {
-            var meta = _container.Resolve<Meta<Func<object>, IMeta>>();
-            Assert.Equal((int)SuppliedValue, (int)meta.Metadata.TheInt);
+            var meta = _container.Resolve<Lazy<Func<object>, IMeta>>();
+            Assert.Equal(SuppliedValue, meta.Metadata.TheInt);
         }
     }
 }

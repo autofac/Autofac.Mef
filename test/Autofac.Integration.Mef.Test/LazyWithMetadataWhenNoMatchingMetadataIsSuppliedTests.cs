@@ -1,16 +1,16 @@
+using System;
 using System.ComponentModel.Composition;
 using Autofac.Core;
-using Autofac.Features.Metadata;
 using Autofac.Integration.Mef;
 using Xunit;
 
-namespace Autofac.Tests.Integration.Mef
+namespace Autofac.Integration.Mef.Test
 {
-    public class StronglyTypedMetadataWhenNoMatchingMetadataIsSuppliedTests
+    public class LazyWithMetadataWhenNoMatchingMetadataIsSuppliedTests
     {
         IContainer _container;
 
-        public StronglyTypedMetadataWhenNoMatchingMetadataIsSuppliedTests()
+        public LazyWithMetadataWhenNoMatchingMetadataIsSuppliedTests()
         {
             var builder = new ContainerBuilder();
             builder.RegisterMetadataRegistrationSources();
@@ -21,15 +21,16 @@ namespace Autofac.Tests.Integration.Mef
         [Fact]
         public void ResolvingStronglyTypedMetadataWithoutDefaultValueThrowsException()
         {
-            var dx = Assert.Throws<DependencyResolutionException>(() => _container.Resolve<Meta<object, IMeta>>());
+            var dx = Assert.Throws<DependencyResolutionException>(() => _container.Resolve<Lazy<object, IMeta>>());
+
             Assert.IsType<CompositionContractMismatchException>(dx.InnerException);
         }
 
         [Fact]
         public void ResolvingStronglyTypedMetadataWithDefaultValueProvidesDefault()
         {
-            var m = _container.Resolve<Meta<object, IMetaWithDefault>>();
-            Assert.Equal((int)42, (int)m.Metadata.TheInt);
+            var m = _container.Resolve<Lazy<object, IMetaWithDefault>>();
+            Assert.Equal(42, m.Metadata.TheInt);
         }
     }
 }

@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Autofac.Integration.Mef", "src\Autofac.Integration.Mef\Autofac.Integration.Mef.csproj", "{DEF93D8F-91B1-42C4-967C-43DB609447CA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Autofac.Tests.Integration.Mef", "tests\Autofac.Tests.Integration.Mef\Autofac.Tests.Integration.Mef.csproj", "{67AAF374-86A2-47C9-B522-721A94073450}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Autofac.Integration.Mef.Test", "test\Autofac.Integration.Mef.Test\Autofac.Integration.Mef.Test.csproj", "{67AAF374-86A2-47C9-B522-721A94073450}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

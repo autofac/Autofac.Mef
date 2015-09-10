@@ -6,7 +6,7 @@ using Autofac.Core;
 using Autofac.Integration.Mef;
 using Xunit;
 
-namespace Autofac.Tests.Integration.Mef
+namespace Autofac.Integration.Mef.Test
 {
     public class MultipleExportRegistrationTests
     {

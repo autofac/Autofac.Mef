@@ -4,7 +4,7 @@ using System.Reflection;
 using Autofac.Integration.Mef;
 using Xunit;
 
-namespace Autofac.Tests.Integration.Mef
+namespace Autofac.Integration.Mef.Test
 {
     /// <summary>
     /// See Autofac Issue 128.

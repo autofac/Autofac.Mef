@@ -4,7 +4,7 @@ using System.ComponentModel.Composition.Hosting;
 using Autofac.Integration.Mef;
 using Xunit;
 
-namespace Autofac.Tests.Integration.Mef
+namespace Autofac.Integration.Mef.Test
 {
     public class GenericExportRegistrationTests
     {

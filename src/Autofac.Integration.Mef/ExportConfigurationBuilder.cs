@@ -38,7 +38,9 @@ namespace Autofac.Integration.Mef
         readonly IDictionary<string, object> _metadata = new Dictionary<string, object>();
 
         internal string ContractName { get; private set; }
+
         internal IDictionary<string, object> Metadata { get { return _metadata; } }
+
         internal string ExportTypeIdentity { get; private set; }
 
         /// <summary>
@@ -61,7 +63,10 @@ namespace Autofac.Integration.Mef
         /// <returns>Builder for additional configuration.</returns>
         public ExportConfigurationBuilder AsNamed<TExportedValue>(string name)
         {
-            if (name == null) throw new ArgumentNullException("name");
+            if (name == null)
+            {
+                throw new ArgumentNullException("name");
+            }
 
             WithMetadata(CompositionConstants.ExportTypeIdentityMetadataName, AttributedModelServices.GetTypeIdentity(typeof(TExportedValue)));
             ContractName = name;
@@ -79,7 +84,11 @@ namespace Autofac.Integration.Mef
             _metadata.Add(key, value);
             if (key == CompositionConstants.ExportTypeIdentityMetadataName)
             {
-                if (value == null) throw new ArgumentNullException("value");
+                if (value == null)
+                {
+                    throw new ArgumentNullException("value");
+                }
+
                 ExportTypeIdentity = (string)value;
             }
 
@@ -100,8 +109,11 @@ namespace Autofac.Integration.Mef
             {
                 throw new ArgumentNullException("metadata");
             }
+
             foreach (var m in metadata)
+            {
                 WithMetadata(m.Key, m.Value);
+            }
 
             return this;
         }

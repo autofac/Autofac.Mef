@@ -4,7 +4,7 @@ using Autofac.Integration.Mef;
 using Autofac.Util;
 using Xunit;
 
-namespace Autofac.Tests.Integration.Mef
+namespace Autofac.Integration.Mef.Test
 {
     public class DisposalRegistrationTests
     {
