@@ -1,23 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
-using System.Linq;
 using Autofac.Integration.Mef;
-using NUnit.Framework;
+using Xunit;
 
 namespace Autofac.Tests.Integration.Mef
 {
-    [TestFixture]
     public class GenericExportRegistrationTests
     {
-        [Test(Description = "Issue 326: Generic interfaces should be supported.")]
+        [Fact]
         public void RegisterComposablePartCatalog_GenericExport()
         {
             var container = RegisterTypeCatalogContaining(typeof(IT1), typeof(ITest<>), typeof(Test));
             var b = container.Resolve<ITest<IT1>>();
-            Assert.IsNotNull(b);
-            Assert.IsInstanceOf<Test>(b);
+            Assert.NotNull(b);
+            Assert.IsType<Test>(b);
         }
 
         private static IContainer RegisterTypeCatalogContaining(params Type[] types)
@@ -30,11 +27,17 @@ namespace Autofac.Tests.Integration.Mef
         }
 
         [InheritedExport]
-        public interface ITest<T> { }
+        public interface ITest<T>
+        {
+        }
 
-        public interface IT1 { }
+        public interface IT1
+        {
+        }
 
-        public class Test : ITest<IT1> { }
+        public class Test : ITest<IT1>
+        {
+        }
 
         public class TestConsumer
         {

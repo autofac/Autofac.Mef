@@ -1,8 +1,8 @@
-﻿using Autofac.Integration.Mef;
-using NUnit.Framework;
-using System.ComponentModel.Composition;
+﻿using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Reflection;
+using Autofac.Integration.Mef;
+using Xunit;
 
 namespace Autofac.Tests.Integration.Mef
 {
@@ -10,12 +10,12 @@ namespace Autofac.Tests.Integration.Mef
     /// See Autofac Issue 128.
     /// Courtesy of palpatine@kopernet.org
     /// </summary>
-    [TestFixture]
     public class LifetimeScenariosTests
     {
         public class RegisteredInAutofac2
         {
             public ExportedToMefAndImportingFromAutofac ImportedFormMef { get; set; }
+
             public RegisteredInAutofac2(ExportedToMefAndImportingFromAutofac importedFormMef)
             {
                 ImportedFormMef = importedFormMef;
@@ -34,7 +34,7 @@ namespace Autofac.Tests.Integration.Mef
         {
         }
 
-        [Test]
+        [Fact]
         public void ClassRegisteredInAutofacAsFactoryScopedIsResolvedByMefAsFactoryScoped()
         {
             var containerBuilder = new ContainerBuilder();
@@ -50,9 +50,9 @@ namespace Autofac.Tests.Integration.Mef
             var elementFromAutofac1 = autofacContainer.Resolve<RegisteredInAutofac2>();
             var elementFromAutofac2 = autofacContainer.Resolve<RegisteredInAutofac2>();
 
-            Assert.AreNotSame(elementFromAutofac1, elementFromAutofac2);
-            Assert.AreNotSame(elementFromAutofac1.ImportedFormMef, elementFromAutofac2.ImportedFormMef);
-            Assert.AreNotSame(elementFromAutofac1.ImportedFormMef.ImportedFormAutofac, elementFromAutofac2.ImportedFormMef.ImportedFormAutofac);//fail
+            Assert.NotSame(elementFromAutofac1, elementFromAutofac2);
+            Assert.NotSame(elementFromAutofac1.ImportedFormMef, elementFromAutofac2.ImportedFormMef);
+            Assert.NotSame(elementFromAutofac1.ImportedFormMef.ImportedFormAutofac, elementFromAutofac2.ImportedFormMef.ImportedFormAutofac);//fail
         }
     }
 }

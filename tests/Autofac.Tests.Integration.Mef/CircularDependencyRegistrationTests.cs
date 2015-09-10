@@ -1,34 +1,31 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
-using System.Linq;
 using Autofac.Integration.Mef;
-using NUnit.Framework;
+using Xunit;
 
 namespace Autofac.Tests.Integration.Mef
 {
-    [TestFixture]
     public class CircularDependencyRegistrationTests
     {
-        [Test]
+        [Fact]
         public void HandlesLazyMefNonPrerequisiteCircularity1()
         {
             var container = RegisterTypeCatalogContaining(typeof(LazyCircularA), typeof(LazyCircularB));
             var a = container.Resolve<LazyCircularA>();
-            Assert.IsNotNull(a);
-            Assert.IsNotNull(a.B);
-            Assert.AreSame(a, a.B.Value.A.Value);
+            Assert.NotNull(a);
+            Assert.NotNull(a.B);
+            Assert.Same(a, a.B.Value.A.Value);
         }
 
-        [Test]
+        [Fact]
         public void HandlesLazyMefNonPrerequisiteCircularity2()
         {
             var container = RegisterTypeCatalogContaining(typeof(LazyCircularA), typeof(LazyCircularB));
             var b = container.Resolve<LazyCircularB>();
-            Assert.IsNotNull(b);
-            Assert.IsNotNull(b.A);
-            Assert.AreSame(b, b.A.Value.B.Value);
+            Assert.NotNull(b);
+            Assert.NotNull(b.A);
+            Assert.Same(b, b.A.Value.B.Value);
         }
 
         private static IContainer RegisterTypeCatalogContaining(params Type[] types)
@@ -40,26 +37,26 @@ namespace Autofac.Tests.Integration.Mef
             return container;
         }
 
-        [Test]
+        [Fact]
         public void HandlesEagerMefNonPrerequisiteCircularity1()
         {
             var container = RegisterTypeCatalogContaining(typeof(EagerCircularA), typeof(EagerCircularB));
             var a = container.Resolve<EagerCircularA>();
-            Assert.IsNotNull(a);
-            Assert.IsNotNull(a.B);
-            Assert.AreSame(a, a.B.A);
-            Assert.AreSame(a.B, a.B.A.B);
+            Assert.NotNull(a);
+            Assert.NotNull(a.B);
+            Assert.Same(a, a.B.A);
+            Assert.Same(a.B, a.B.A.B);
         }
 
-        [Test]
+        [Fact]
         public void HandlesEagerMefNonPrerequisiteCircularity2()
         {
             var container = RegisterTypeCatalogContaining(typeof(EagerCircularA), typeof(EagerCircularB));
             var b = container.Resolve<EagerCircularB>();
-            Assert.IsNotNull(b);
-            Assert.IsNotNull(b.A);
-            Assert.AreSame(b, b.A.B);
-            Assert.AreSame(b.A, b.A.B.A);
+            Assert.NotNull(b);
+            Assert.NotNull(b.A);
+            Assert.Same(b, b.A.B);
+            Assert.Same(b.A, b.A.B.A);
         }
 
         [Export]
@@ -80,6 +77,7 @@ namespace Autofac.Tests.Integration.Mef
             [Import]
             public Lazy<LazyCircularA> A { get; set; }
         }
+
         /* Non-lazy circular dependencies in MEF have to be done with
          * properties. Constructor parameters will throw a MEF composition
          * exception. */

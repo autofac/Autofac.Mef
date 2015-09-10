@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
+﻿using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Linq;
 using Autofac.Core.Registration;
 using Autofac.Integration.Mef;
-using NUnit.Framework;
+using Xunit;
 
 namespace Autofac.Tests.Integration.Mef
 {
-    [TestFixture]
     public class SimpleRegistrationTests
     {
-        [Test]
+        [Fact]
         public void MissingDependencyDetected()
         {
             var builder = new ContainerBuilder();
@@ -22,7 +19,7 @@ namespace Autofac.Tests.Integration.Mef
             Assert.Throws<ComponentNotRegisteredException>(() => container.Resolve<HasMissingDependency>());
         }
 
-        [Test]
+        [Fact]
         public void RetrievesExportedInterfaceFromCatalogPart()
         {
             var builder = new ContainerBuilder();
@@ -33,7 +30,7 @@ namespace Autofac.Tests.Integration.Mef
             Assert.IsAssignableFrom<MefDependency>(foo);
         }
 
-        [Test]
+        [Fact]
         public void SatisfiesImportOnMefComponentFromAutofac()
         {
             var builder = new ContainerBuilder();
@@ -42,10 +39,10 @@ namespace Autofac.Tests.Integration.Mef
             builder.RegisterType<MefDependency>().Exported(e => e.As<IDependency>());
             var container = builder.Build();
             var bar = container.Resolve<ImportsMefDependency>();
-            Assert.IsNotNull(bar.Dependency);
+            Assert.NotNull(bar.Dependency);
         }
 
-        [Test]
+        [Fact]
         public void SatisfiesImportOnMefComponentFromMef()
         {
             var builder = new ContainerBuilder();
@@ -53,10 +50,10 @@ namespace Autofac.Tests.Integration.Mef
             builder.RegisterComposablePartCatalog(catalog);
             var container = builder.Build();
             var bar = container.Resolve<ImportsMefDependency>();
-            Assert.IsNotNull(bar.Dependency);
+            Assert.NotNull(bar.Dependency);
         }
 
-        [Test]
+        [Fact]
         public void ResolvesExportsFromContext()
         {
             var builder = new ContainerBuilder();
@@ -65,10 +62,10 @@ namespace Autofac.Tests.Integration.Mef
             builder.RegisterType<MefDependency>().Exported(e => e.As<IDependency>());
             var container = builder.Build();
             var exports = container.ResolveExports<IDependency>();
-            Assert.AreEqual(2, exports.Count());
+            Assert.Equal(2, exports.Count());
         }
 
-        [Test]
+        [Fact]
         public void RestrictsExportsBasedOnValueType()
         {
             var builder = new ContainerBuilder();
@@ -77,10 +74,10 @@ namespace Autofac.Tests.Integration.Mef
             builder.RegisterType<MefDependency>().Exported(e => e.AsNamed<MefDependency>(n));
             var container = builder.Build();
             var exports = container.ResolveExports<IDependency>(n);
-            Assert.AreEqual(1, exports.Count());
+            Assert.Equal(1, exports.Count());
         }
 
-        [Test(Description = "Issue #310: Resolve fails on MEF export of type object.")]
+        [Fact]
         public void ObjectExportsSupportedByName()
         {
             var builder = new ContainerBuilder();
@@ -88,10 +85,10 @@ namespace Autofac.Tests.Integration.Mef
             builder.RegisterComposablePartCatalog(catalog);
             var container = builder.Build();
             var importer = container.Resolve<ObjectExportImporter>();
-            Assert.IsNotNull(importer.Item);
+            Assert.NotNull(importer.Item);
         }
 
-        [Test(Description = "Issue #348: Importing the same type twice in a constructor fails.")]
+        [Fact]
         public void DuplicateConstructorDependency()
         {
             var builder = new ContainerBuilder();
@@ -100,11 +97,13 @@ namespace Autofac.Tests.Integration.Mef
             builder.RegisterComposablePartCatalog(catalog);
             var container = builder.Build();
             var resolved = container.Resolve<ImportsDuplicateMefClass>();
-            Assert.IsNotNull(resolved.First);
-            Assert.IsNotNull(resolved.Second);
+            Assert.NotNull(resolved.First);
+            Assert.NotNull(resolved.Second);
         }
 
-        public interface IDependency { }
+        public interface IDependency
+        {
+        }
 
         [Export(typeof(IDependency))]
         public class MefDependency : IDependency
@@ -130,10 +129,14 @@ namespace Autofac.Tests.Integration.Mef
             public string Dependency { get; set; }
         }
 
-        public class ObjectExportBaseClass { }
+        public class ObjectExportBaseClass
+        {
+        }
 
         [Export("contract-name", typeof(object))]
-        public class ObjectExportDerivedClass : ObjectExportBaseClass { }
+        public class ObjectExportDerivedClass : ObjectExportBaseClass
+        {
+        }
 
         [Export]
         public class ObjectExportImporter
@@ -145,7 +148,9 @@ namespace Autofac.Tests.Integration.Mef
         public class ImportsDuplicateMefClass
         {
             public ImportsMefDependency First { get; set; }
+
             public ImportsMefDependency Second { get; set; }
+
             public ImportsDuplicateMefClass(ImportsMefDependency first, ImportsMefDependency second)
             {
                 this.First = first;

@@ -10,11 +10,12 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Autofac.Integration.Mef</RootNamespace>
     <AssemblyName>Autofac.Integration.Mef</AssemblyName>
-    <TargetFrameworkVersion Condition="$(TargetFrameworkVersion)==''">v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion Condition="$(TargetFrameworkVersion)==''">v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile Condition="$(TargetFrameworkVersion)==''">Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\Autofac.snk</AssemblyOriginatorKeyFile>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -27,6 +28,7 @@
     <CodeAnalysisRuleSet>..\..\Full.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>bin\Debug\Autofac.Integration.Mef.xml</DocumentationFile>
     <RunCodeAnalysis>true</RunCodeAnalysis>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -38,10 +40,12 @@
     <CodeAnalysisRuleSet>..\..\Full.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <DocumentationFile>bin\Release\Autofac.Integration.Mef.xml</DocumentationFile>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Autofac">
-      <HintPath>..\..\packages\Autofac.3.3.1\lib\net40\Autofac.dll</HintPath>
+    <Reference Include="Autofac, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Autofac.4.0.0-beta7-130\lib\net45\Autofac.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -66,7 +70,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="LazyWithMetadataRegistrationSource.cs" />
-    <Compile Include="StronglyTypedMetaRegistrationSource.cs" />
+    <Compile Include="StronglyTypedMetadataRegistrationSource.cs" />
     <Compile Include="Util\ReflectionExtensions.cs" />
     <Compile Include="Util\ReflectionExtensionsResources.Designer.cs">
       <DependentUpon>ReflectionExtensionsResources.resx</DependentUpon>
@@ -74,8 +78,8 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Util\TypeExtensions.cs" />
-    <Compile Include="StronglyTypedMetaRegistrationSourceResources.Designer.cs">
-      <DependentUpon>StronglyTypedMetaRegistrationSourceResources.resx</DependentUpon>
+    <Compile Include="StronglyTypedMetadataRegistrationSourceResources.Designer.cs">
+      <DependentUpon>StronglyTypedMetadataRegistrationSourceResources.resx</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
@@ -96,9 +100,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>LazyWithMetadataRegistrationSourceResources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="StronglyTypedMetaRegistrationSourceResources.resx">
+    <EmbeddedResource Include="StronglyTypedMetadataRegistrationSourceResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>StronglyTypedMetaRegistrationSourceResources.Designer.cs</LastGenOutput>
+      <LastGenOutput>StronglyTypedMetadataRegistrationSourceResources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="RegistrationExtensionsResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

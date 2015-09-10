@@ -22,14 +22,14 @@ namespace Autofac.Integration.Mef {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class ContractBasedServiceResources {
+    internal class StronglyTypedMetadataRegistrationSourceResources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal ContractBasedServiceResources() {
+        internal StronglyTypedMetadataRegistrationSourceResources() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace Autofac.Integration.Mef {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Autofac.Integration.Mef.ContractBasedServiceResources", typeof(ContractBasedServiceResources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Autofac.Integration.Mef.StronglyTypedMetadataRegistrationSourceResources", typeof(StronglyTypedMetadataRegistrationSourceResources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,11 +61,11 @@ namespace Autofac.Integration.Mef {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ContractName={0}.
+        ///   Looks up a localized string similar to Meta&lt;T, TMetadata&gt; Support.
         /// </summary>
-        internal static string DescriptionFormat {
+        internal static string StronglyTypedMetaRegistrationSourceDescription {
             get {
-                return ResourceManager.GetString("DescriptionFormat", resourceCulture);
+                return ResourceManager.GetString("StronglyTypedMetaRegistrationSourceDescription", resourceCulture);
             }
         }
     }

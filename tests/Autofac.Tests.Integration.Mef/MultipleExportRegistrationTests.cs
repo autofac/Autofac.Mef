@@ -1,18 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Linq;
 using Autofac.Core;
 using Autofac.Integration.Mef;
-using NUnit.Framework;
+using Xunit;
 
 namespace Autofac.Tests.Integration.Mef
 {
-    [TestFixture]
     public class MultipleExportRegistrationTests
     {
-        [Test]
+        [Fact]
         public void ImportsEmptyCollectionIfDependencyMissing()
         {
             var builder = new ContainerBuilder();
@@ -20,11 +18,11 @@ namespace Autofac.Tests.Integration.Mef
             builder.RegisterComposablePartCatalog(catalog);
             var container = builder.Build();
             var im = container.Resolve<ImportsMany>();
-            Assert.IsNotNull(im.Dependencies);
-            Assert.IsFalse(im.Dependencies.Any());
+            Assert.NotNull(im.Dependencies);
+            Assert.False(im.Dependencies.Any());
         }
 
-        [Test]
+        [Fact]
         public void RespectsExplicitInterchangeServices()
         {
             var builder = new ContainerBuilder();
@@ -41,19 +39,23 @@ namespace Autofac.Tests.Integration.Mef
 
             var container = builder.Build();
 
-            Assert.IsTrue(container.IsRegisteredService(interchangeService1));
-            Assert.IsTrue(container.IsRegisteredService(interchangeService2));
-            Assert.IsFalse(container.IsRegisteredService(nonInterchangeService1));
-            Assert.IsFalse(container.IsRegisteredService(nonInterchangeService2));
+            Assert.True(container.IsRegisteredService(interchangeService1));
+            Assert.True(container.IsRegisteredService(interchangeService2));
+            Assert.False(container.IsRegisteredService(nonInterchangeService1));
+            Assert.False(container.IsRegisteredService(nonInterchangeService2));
         }
 
-        public class HasMultipleExportsBase { }
+        public class HasMultipleExportsBase
+        {
+        }
 
         [Export("a"),
-         Export("b"),
-         Export(typeof(HasMultipleExportsBase)),
-         Export(typeof(HasMultipleExports))]
-        public class HasMultipleExports : HasMultipleExportsBase { }
+        Export("b"),
+        Export(typeof(HasMultipleExportsBase)),
+        Export(typeof(HasMultipleExports))]
+        public class HasMultipleExports : HasMultipleExportsBase
+        {
+        }
 
         [Export]
         public class ImportsMany

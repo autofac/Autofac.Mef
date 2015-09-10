@@ -5,14 +5,13 @@ using System.ComponentModel.Composition.Hosting;
 using System.Linq;
 using Autofac.Features.Metadata;
 using Autofac.Integration.Mef;
-using NUnit.Framework;
+using Xunit;
 
 namespace Autofac.Tests.Integration.Mef
 {
-    [TestFixture]
     public class MetadataRegistrationTests
     {
-        [Test]
+        [Fact]
         public void RegisterMetadataRegistrationSources_WhenContainerBuilt_AddsStronglyTypedMetaRegistrationSource()
         {
             var builder = new ContainerBuilder();
@@ -20,12 +19,12 @@ namespace Autofac.Tests.Integration.Mef
             var container = builder.Build();
 
             var stronglyTypedMetaCount = container.ComponentRegistry.Sources
-                .Count(source => source is StronglyTypedMetaRegistrationSource);
+                .Count(source => source is StronglyTypedMetadataRegistrationSource);
 
-            Assert.That(stronglyTypedMetaCount, Is.EqualTo(1));
+            Assert.Equal(1, stronglyTypedMetaCount);
         }
 
-        [Test]
+        [Fact]
         public void RegisterMetadataRegistrationSources_WhenContainerBuilt_AddsLazyWithMetadataRegistrationSource()
         {
             var builder = new ContainerBuilder();
@@ -33,12 +32,12 @@ namespace Autofac.Tests.Integration.Mef
             var container = builder.Build();
 
             var lazyWithMetadataCount = container.ComponentRegistry.Sources.Count(
-                source => source is LazyWithMetadataRegistrationSource);
+            source => source is LazyWithMetadataRegistrationSource);
 
-            Assert.That(lazyWithMetadataCount, Is.EqualTo(1));
+            Assert.Equal(1, lazyWithMetadataCount);
         }
 
-        [Test]
+        [Fact]
         public void WithMetadata_InterfaceBasedMetadata_SupportLazyWithMetadata()
         {
             var builder = new ContainerBuilder();
@@ -49,11 +48,11 @@ namespace Autofac.Tests.Integration.Mef
 
             var lazy = container.Resolve<Lazy<object, IMeta>>();
 
-            Assert.That(lazy.Metadata.TheInt, Is.EqualTo(42));
-            Assert.That(lazy.Value, Is.Not.Null);
+            Assert.Equal(42, lazy.Metadata.TheInt);
+            Assert.NotNull(lazy.Value);
         }
 
-        [Test]
+        [Fact]
         public void WithMetadata_InterfaceBasedMetadata_SupportMeta()
         {
             var builder = new ContainerBuilder();
@@ -64,11 +63,11 @@ namespace Autofac.Tests.Integration.Mef
 
             var meta = container.Resolve<Meta<object, IMeta>>();
 
-            Assert.That(meta.Metadata.TheInt, Is.EqualTo(42));
-            Assert.That(meta.Value, Is.Not.Null);
+            Assert.Equal(42, meta.Metadata.TheInt);
+            Assert.NotNull(meta.Value);
         }
-        
-        [Test]
+
+        [Fact]
         public void ExcludesExportsWithoutRequiredMetadata()
         {
             var builder = new ContainerBuilder();
@@ -76,10 +75,10 @@ namespace Autofac.Tests.Integration.Mef
             builder.RegisterComposablePartCatalog(catalog);
             var container = builder.Build();
             var rm = container.Resolve<RequiresMetadataAllowsDefault>();
-            Assert.IsNull(rm.Dependency);
+            Assert.Null(rm.Dependency);
         }
 
-        [Test]
+        [Fact]
         public void IncludesExportsWithRequiredMetadata()
         {
             var builder = new ContainerBuilder();
@@ -88,10 +87,10 @@ namespace Autofac.Tests.Integration.Mef
             builder.RegisterComposablePartCatalog(catalog);
             var container = builder.Build();
             var rm = container.Resolve<RequiresMetadata>();
-            Assert.IsNotNull(rm.Dependency);
+            Assert.NotNull(rm.Dependency);
         }
 
-        [Test]
+        [Fact]
         public void SupportsMetadataOnAutofacExports()
         {
             var builder = new ContainerBuilder();
@@ -106,11 +105,11 @@ namespace Autofac.Tests.Integration.Mef
             builder.RegisterComposablePartCatalog(catalog);
             var container = builder.Build();
             var rm = container.Resolve<RequiresMetadata>();
-            Assert.IsNotNull(rm.Dependency);
-            Assert.AreEqual(rm.Dependency.Value, "Hello");
+            Assert.NotNull(rm.Dependency);
+            Assert.Equal(rm.Dependency.Value, "Hello");
         }
 
-        [Test]
+        [Fact]
         public void SetsMultipleExportsToZeroOrMoreCardinalityImports()
         {
             var builder = new ContainerBuilder();
@@ -119,8 +118,8 @@ namespace Autofac.Tests.Integration.Mef
             builder.RegisterComposablePartCatalog(catalog);
             var container = builder.Build();
             var rm = container.Resolve<ImportsMany>();
-            Assert.IsNotNull(rm.Dependencies);
-            Assert.AreEqual(2, rm.Dependencies.Count());
+            Assert.NotNull(rm.Dependencies);
+            Assert.Equal(2, rm.Dependencies.Count());
         }
 
         public interface IRequiredMetadata
@@ -152,14 +151,26 @@ namespace Autofac.Tests.Integration.Mef
         public class HasNoMetadata
         {
             [Export]
-            public string Service { get { return "Bar"; } }
+            public string Service
+            {
+                get
+                {
+                    return "Bar";
+                }
+            }
         }
 
         public class HasMetadata
         {
             [Export]
             [ExportMetadata("Key", "Foo")]
-            public string Service { get { return "Bar"; } }
+            public string Service
+            {
+                get
+                {
+                    return "Bar";
+                }
+            }
         }
     }
 }

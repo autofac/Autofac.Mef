@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
+﻿using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
-using System.Linq;
 using Autofac.Integration.Mef;
 using Autofac.Util;
-using NUnit.Framework;
+using Xunit;
 
 namespace Autofac.Tests.Integration.Mef
 {
-    [TestFixture]
     public class DisposalRegistrationTests
     {
-        [Test]
+        [Fact]
         public void DefaultLifetimeForMefComponentsIsSingleton()
         {
             var builder = new ContainerBuilder();
@@ -21,7 +17,7 @@ namespace Autofac.Tests.Integration.Mef
             AssertDisposalTrackerIsSingleton(builder);
         }
 
-        [Test]
+        [Fact]
         public void RespectsSharedCreationPolicy()
         {
             var builder = new ContainerBuilder();
@@ -30,7 +26,7 @@ namespace Autofac.Tests.Integration.Mef
             AssertDisposalTrackerIsSingleton(builder);
         }
 
-        [Test]
+        [Fact]
         public void AnyCreationPolicyDefaultsToShared()
         {
             var builder = new ContainerBuilder();
@@ -44,13 +40,13 @@ namespace Autofac.Tests.Integration.Mef
             var container = builder.Build();
             var instance1 = container.Resolve<DisposalTracker>();
             var instance2 = container.Resolve<DisposalTracker>();
-            Assert.AreSame(instance1, instance2);
-            Assert.IsFalse(instance1.IsDisposedPublic);
+            Assert.Same(instance1, instance2);
+            Assert.False(instance1.IsDisposedPublic);
             container.Dispose();
-            Assert.IsTrue(instance1.IsDisposedPublic);
+            Assert.True(instance1.IsDisposedPublic);
         }
 
-        [Test]
+        [Fact]
         public void RespectsNonSharedCreationPolicy()
         {
             var builder = new ContainerBuilder();
@@ -60,12 +56,12 @@ namespace Autofac.Tests.Integration.Mef
             var instance1 = container.Resolve<DisposalTracker>();
             var instance2 = container.Resolve<DisposalTracker>();
             Assert.IsAssignableFrom<HasNonSharedCreationPolicy>(instance1);
-            Assert.AreNotSame(instance1, instance2);
-            Assert.IsFalse(instance1.IsDisposedPublic);
-            Assert.IsFalse(instance2.IsDisposedPublic);
+            Assert.NotSame(instance1, instance2);
+            Assert.False(instance1.IsDisposedPublic);
+            Assert.False(instance2.IsDisposedPublic);
             container.Dispose();
-            Assert.IsTrue(instance1.IsDisposedPublic);
-            Assert.IsTrue(instance2.IsDisposedPublic);
+            Assert.True(instance1.IsDisposedPublic);
+            Assert.True(instance2.IsDisposedPublic);
         }
 
         public class DisposalTracker : Disposable
