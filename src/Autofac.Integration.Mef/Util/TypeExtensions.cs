@@ -22,20 +22,25 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 // OTHER DEALINGS IN THE SOFTWARE.
-
 using System;
 
 namespace Autofac.Integration.Mef.Util
 {
-    static class TypeExtensions
+    internal static class TypeExtensions
     {
         public static bool IsGenericTypeDefinedBy(this Type @this, Type openGeneric)
         {
-            if (@this == null) throw new ArgumentNullException("this");
-            if (openGeneric == null) throw new ArgumentNullException("openGeneric");
+            if (@this == null)
+            {
+                throw new ArgumentNullException("this");
+            }
+
+            if (openGeneric == null)
+            {
+                throw new ArgumentNullException("openGeneric");
+            }
 
             return !@this.ContainsGenericParameters && @this.IsGenericType && @this.GetGenericTypeDefinition() == openGeneric;
         }
     }
 }
-

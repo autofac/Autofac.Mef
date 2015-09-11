@@ -22,7 +22,6 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 // OTHER DEALINGS IN THE SOFTWARE.
-
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -30,8 +29,8 @@ using System.Linq;
 using System.Reflection;
 using Autofac.Builder;
 using Autofac.Core;
-using Autofac.Integration.Mef.Util;
 using Autofac.Features.Metadata;
+using Autofac.Integration.Mef.Util;
 
 namespace Autofac.Integration.Mef
 {
@@ -40,12 +39,19 @@ namespace Autofac.Integration.Mef
     /// types automatically whenever type T is registered with the container.
     /// Metadata values come from the component registration's metadata.
     /// </summary>
-    class StronglyTypedMetadataRegistrationSource : IRegistrationSource
+    internal class StronglyTypedMetadataRegistrationSource : IRegistrationSource
     {
-        static readonly MethodInfo CreateMetaRegistrationMethod = typeof(StronglyTypedMetadataRegistrationSource).GetMethod(
-            "CreateMetaRegistration", BindingFlags.Static | BindingFlags.NonPublic);
+        private static readonly MethodInfo CreateMetaRegistrationMethod = typeof(StronglyTypedMetadataRegistrationSource).GetMethod("CreateMetaRegistration", BindingFlags.Static | BindingFlags.NonPublic);
 
-        delegate IComponentRegistration RegistrationCreator(Service service, IComponentRegistration valueRegistration);
+        private delegate IComponentRegistration RegistrationCreator(Service service, IComponentRegistration valueRegistration);
+
+        public bool IsAdapterForIndividualComponents
+        {
+            get
+            {
+                return true;
+            }
+        }
 
         public IEnumerable<IComponentRegistration> RegistrationsFor(Service service, Func<Service, IEnumerable<IComponentRegistration>> registrationAccessor)
         {
@@ -53,15 +59,16 @@ namespace Autofac.Integration.Mef
             {
                 throw new ArgumentNullException("registrationAccessor");
             }
+
             var swt = service as IServiceWithType;
             if (swt == null || !swt.ServiceType.IsGenericTypeDefinedBy(typeof(Meta<,>)))
+            {
                 return Enumerable.Empty<IComponentRegistration>();
+            }
 
             var valueType = swt.ServiceType.GetGenericArguments()[0];
             var metaType = swt.ServiceType.GetGenericArguments()[1];
-
             var valueService = swt.ChangeType(valueType);
-
             var registrationCreator = (RegistrationCreator)Delegate.CreateDelegate(
                 typeof(RegistrationCreator),
                 CreateMetaRegistrationMethod.MakeGenericMethod(valueType, metaType));
@@ -70,19 +77,23 @@ namespace Autofac.Integration.Mef
                 .Select(v => registrationCreator.Invoke(service, v));
         }
 
-        public bool IsAdapterForIndividualComponents
-        {
-            get { return true; }
-        }
-
         public override string ToString()
         {
             return StronglyTypedMetadataRegistrationSourceResources.StronglyTypedMetaRegistrationSourceDescription;
         }
 
-        // ReSharper disable UnusedMember.Local
-        static IComponentRegistration CreateMetaRegistration<T, TMetadata>(Service providedService, IComponentRegistration valueRegistration)
-        // ReSharper restore UnusedMember.Local
+        /// <summary>
+        /// Strongly typed registration creator called via reflection by the source
+        /// to generate a <see cref="Meta{T, TMetadata}"/> component.
+        /// </summary>
+        /// <typeparam name="T">The type of service being resolved.</typeparam>
+        /// <typeparam name="TMetadata">The type of metadata object associated with the service.</typeparam>
+        /// <param name="providedService">The service for which the component registration is being generated.</param>
+        /// <param name="valueRegistration">The registration that should provide the component value.</param>
+        /// <returns>
+        /// An <see cref="IComponentRegistration"/> containing a <see cref="Meta{T, TMetadata}"/>.
+        /// </returns>
+        private static IComponentRegistration CreateMetaRegistration<T, TMetadata>(Service providedService, IComponentRegistration valueRegistration)
         {
             var rb = RegistrationBuilder
                 .ForDelegate((c, p) => new Meta<T, TMetadata>(
