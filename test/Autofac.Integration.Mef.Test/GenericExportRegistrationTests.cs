@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
-using Autofac.Integration.Mef;
 using Xunit;
 
 namespace Autofac.Integration.Mef.Test
@@ -15,6 +14,16 @@ namespace Autofac.Integration.Mef.Test
             var b = container.Resolve<ITest<IT1>>();
             Assert.NotNull(b);
             Assert.IsType<Test>(b);
+        }
+
+        [Fact(Skip = "Issue #4")]
+        public void RegisterComposablePartCatalog_OpenGeneric()
+        {
+            // Autofac.Core.Registration.ComponentNotRegisteredException:
+            // The requested service 'ContractName=Autofac.Integration.Mef.Test.GenericExportRegistrationTests+OpenGenericExport(Autofac.Integration.Mef.Test.GenericExportRegistrationTests+SimpleType)' has not been registered.
+            var container = RegisterTypeCatalogContaining(typeof(OpenGenericExport<>), typeof(SimpleType), typeof(OpenGenericConsumer));
+            var b = container.Resolve<OpenGenericConsumer>();
+            Assert.NotNull(b);
         }
 
         private static IContainer RegisterTypeCatalogContaining(params Type[] types)
@@ -43,6 +52,29 @@ namespace Autofac.Integration.Mef.Test
         {
             [Import]
             public ITest<IT1> Property { get; set; }
+        }
+
+        [Export(typeof(OpenGenericExport<>))]
+        public class OpenGenericExport<T>
+        {
+            [ImportingConstructor]
+            public OpenGenericExport(T t)
+            {
+            }
+        }
+
+        [Export]
+        public class SimpleType
+        {
+        }
+
+        [Export]
+        public class OpenGenericConsumer
+        {
+            [ImportingConstructor]
+            public OpenGenericConsumer(OpenGenericExport<SimpleType> o)
+            {
+            }
         }
     }
 }
