@@ -35,11 +35,9 @@ namespace Autofac.Integration.Mef
     /// </summary>
     public class ExportConfigurationBuilder
     {
-        readonly IDictionary<string, object> _metadata = new Dictionary<string, object>();
-
         internal string ContractName { get; private set; }
 
-        internal IDictionary<string, object> Metadata { get { return _metadata; } }
+        internal IDictionary<string, object> Metadata { get; } = new Dictionary<string, object>();
 
         internal string ExportTypeIdentity { get; private set; }
 
@@ -63,10 +61,7 @@ namespace Autofac.Integration.Mef
         /// <returns>Builder for additional configuration.</returns>
         public ExportConfigurationBuilder AsNamed<TExportedValue>(string name)
         {
-            if (name == null)
-            {
-                throw new ArgumentNullException("name");
-            }
+            if (name == null) throw new ArgumentNullException(nameof(name));
 
             WithMetadata(CompositionConstants.ExportTypeIdentityMetadataName, AttributedModelServices.GetTypeIdentity(typeof(TExportedValue)));
             ContractName = name;
@@ -81,15 +76,10 @@ namespace Autofac.Integration.Mef
         /// <returns>Builder for additional configuration.</returns>
         public ExportConfigurationBuilder WithMetadata(string key, object value)
         {
-            _metadata.Add(key, value);
+            Metadata.Add(key, value);
             if (key == CompositionConstants.ExportTypeIdentityMetadataName)
             {
-                if (value == null)
-                {
-                    throw new ArgumentNullException("value");
-                }
-
-                ExportTypeIdentity = (string)value;
+                ExportTypeIdentity = (string)value ?? throw new ArgumentNullException(nameof(value));
             }
 
             return this;
@@ -105,10 +95,7 @@ namespace Autofac.Integration.Mef
         /// </exception>
         public ExportConfigurationBuilder WithMetadata(IEnumerable<KeyValuePair<string, object>> metadata)
         {
-            if (metadata == null)
-            {
-                throw new ArgumentNullException("metadata");
-            }
+            if (metadata == null) throw new ArgumentNullException(nameof(metadata));
 
             foreach (var m in metadata)
             {

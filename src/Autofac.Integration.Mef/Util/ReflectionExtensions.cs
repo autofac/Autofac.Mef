@@ -66,14 +66,17 @@ namespace Autofac.Integration.Mef.Util
         public static PropertyInfo GetProperty<TDeclaring, TProperty>(
             Expression<Func<TDeclaring, TProperty>> propertyAccessor)
         {
-            if (propertyAccessor == null) throw new ArgumentNullException("propertyAccessor");
+            if (propertyAccessor == null) throw new ArgumentNullException(nameof(propertyAccessor));
+
             var mex = propertyAccessor.Body as MemberExpression;
-            if (mex == null ||
-                !(mex.Member is PropertyInfo))
+            if (!(mex?.Member is PropertyInfo))
+            {
                 throw new ArgumentException(string.Format(
                     CultureInfo.CurrentCulture,
                     ReflectionExtensionsResources.ExpressionNotPropertyAccessor,
                     propertyAccessor));
+            }
+
             return (PropertyInfo)mex.Member;
         }
     }

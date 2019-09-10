@@ -28,17 +28,10 @@ namespace Autofac.Integration.Mef.Util
 {
     internal static class TypeExtensions
     {
-        public static bool IsGenericTypeDefinedBy(this Type @this, Type openGeneric)
+        internal static bool IsGenericTypeDefinedBy(this Type @this, Type openGeneric)
         {
-            if (@this == null)
-            {
-                throw new ArgumentNullException("this");
-            }
-
-            if (openGeneric == null)
-            {
-                throw new ArgumentNullException("openGeneric");
-            }
+            if (@this == null) throw new ArgumentNullException(nameof(@this));
+            if (openGeneric == null) throw new ArgumentNullException(nameof(openGeneric));
 
             return !@this.ContainsGenericParameters && @this.IsGenericType && @this.GetGenericTypeDefinition() == openGeneric;
         }

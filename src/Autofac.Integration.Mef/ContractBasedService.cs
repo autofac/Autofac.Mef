@@ -34,8 +34,8 @@ namespace Autofac.Integration.Mef
     /// </summary>
     public class ContractBasedService : Service
     {
-        readonly string _exportTypeIdentity;
-        readonly string _contractName;
+        private readonly string _exportTypeIdentity;
+        private readonly string _contractName;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ContractBasedService"/> class.
@@ -44,10 +44,7 @@ namespace Autofac.Integration.Mef
         /// <param name="exportTypeIdentity">Type identity of the objects exported under the contract.</param>
         public ContractBasedService(string contractName, string exportTypeIdentity)
         {
-            if (string.IsNullOrEmpty(contractName))
-            {
-                throw new ArgumentOutOfRangeException("contractName");
-            }
+            if (string.IsNullOrEmpty(contractName)) throw new ArgumentOutOfRangeException(nameof(contractName));
 
             if (exportTypeIdentity == null)
             {
@@ -63,7 +60,7 @@ namespace Autofac.Integration.Mef
         }
 
         /// <summary>
-        /// Type identity of the objects exported under the contract.
+        /// Gets the type identity of the objects exported under the contract.
         /// </summary>
         public string ExportTypeIdentity
         {
@@ -71,7 +68,7 @@ namespace Autofac.Integration.Mef
         }
 
         /// <summary>
-        /// Gets or sets the name of the contract.
+        /// Gets the name of the contract.
         /// </summary>
         /// <value>The name of the contract.</value>
         public string ContractName
@@ -92,13 +89,13 @@ namespace Autofac.Integration.Mef
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>.
+        /// Determines whether the specified <see cref="object"/> is equal to the current <see cref="object"/>.
         /// </summary>
-        /// <param name="obj">The <see cref="T:System.Object"/> to compare with the current <see cref="T:System.Object"/>.</param>
+        /// <param name="obj">The <see cref="object"/> to compare with the current <see cref="object"/>.</param>
         /// <returns>
-        /// true if the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>; otherwise, false.
+        /// true if the specified <see cref="object"/> is equal to the current <see cref="object"/>; otherwise, false.
         /// </returns>
-        /// <exception cref="T:System.NullReferenceException">The <paramref name="obj"/> parameter is null.</exception>
+        /// <exception cref="NullReferenceException">The <paramref name="obj"/> parameter is null.</exception>
         public override bool Equals(object obj)
         {
             var that = obj as ContractBasedService;
@@ -113,7 +110,7 @@ namespace Autofac.Integration.Mef
         /// Serves as a hash function for a particular ExportDefinition.
         /// </summary>
         /// <returns>
-        /// A hash code for the current <see cref="T:System.Object"/>.
+        /// A hash code for the current <see cref="object"/>.
         /// </returns>
         public override int GetHashCode()
         {
