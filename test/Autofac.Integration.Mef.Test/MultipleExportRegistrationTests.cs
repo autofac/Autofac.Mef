@@ -33,7 +33,8 @@ namespace Autofac.Integration.Mef.Test
             var nonInterchangeService1 = new TypedService(typeof(HasMultipleExports));
             var nonInterchangeService2 = new KeyedService("a", typeof(HasMultipleExports));
 
-            builder.RegisterComposablePartCatalog(catalog,
+            builder.RegisterComposablePartCatalog(
+                catalog,
                 interchangeService1,
                 interchangeService2);
 
@@ -49,10 +50,10 @@ namespace Autofac.Integration.Mef.Test
         {
         }
 
-        [Export("a"),
-        Export("b"),
-        Export(typeof(HasMultipleExportsBase)),
-        Export(typeof(HasMultipleExports))]
+        [Export("a")]
+        [Export("b")]
+        [Export(typeof(HasMultipleExportsBase))]
+        [Export(typeof(HasMultipleExports))]
         public class HasMultipleExports : HasMultipleExportsBase
         {
         }

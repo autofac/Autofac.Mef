@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Linq;
+using Autofac.Integration.Mef.Test.TestTypes;
 using Xunit;
 
 namespace Autofac.Integration.Mef.Test
@@ -29,7 +30,9 @@ namespace Autofac.Integration.Mef.Test
             string Name { get; }
         }
 
-        internal interface IService { }
+        internal interface IService
+        {
+        }
 
         [Fact(Skip = "Issue #1")]
         public void InstanceShouldNotBeCreated()

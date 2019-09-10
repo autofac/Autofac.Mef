@@ -1,12 +1,7 @@
 ﻿using System.ComponentModel;
 
-namespace Autofac.Integration.Mef.Test
+namespace Autofac.Integration.Mef.Test.TestTypes
 {
-    public interface IMeta
-    {
-        int TheInt { get; }
-    }
-
     public interface IMetaWithDefault
     {
         [DefaultValue(42)]

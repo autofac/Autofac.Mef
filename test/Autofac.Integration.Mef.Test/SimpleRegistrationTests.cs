@@ -74,7 +74,7 @@ namespace Autofac.Integration.Mef.Test
             builder.RegisterType<MefDependency>().Exported(e => e.AsNamed<MefDependency>(n));
             var container = builder.Build();
             var exports = container.ResolveExports<IDependency>(n);
-            Assert.Equal(1, exports.Count());
+            Assert.Single(exports);
         }
 
         [Fact]

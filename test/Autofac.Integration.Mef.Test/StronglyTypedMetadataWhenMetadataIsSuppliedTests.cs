@@ -1,17 +1,15 @@
 ﻿using System;
-using System.ComponentModel.Composition;
-using Autofac.Core;
 using Autofac.Features.Metadata;
-using Autofac.Integration.Mef;
+using Autofac.Integration.Mef.Test.TestTypes;
 using Xunit;
 
 namespace Autofac.Integration.Mef.Test
 {
     public class StronglyTypedMetadataWhenMetadataIsSuppliedTests
     {
-        const int SuppliedValue = 123;
+        private const int SuppliedValue = 123;
 
-        IContainer _container;
+        private IContainer _container;
 
         public StronglyTypedMetadataWhenMetadataIsSuppliedTests()
         {

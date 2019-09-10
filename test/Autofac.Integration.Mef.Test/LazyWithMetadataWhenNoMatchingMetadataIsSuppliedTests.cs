@@ -1,14 +1,14 @@
 using System;
 using System.ComponentModel.Composition;
 using Autofac.Core;
-using Autofac.Integration.Mef;
+using Autofac.Integration.Mef.Test.TestTypes;
 using Xunit;
 
 namespace Autofac.Integration.Mef.Test
 {
     public class LazyWithMetadataWhenNoMatchingMetadataIsSuppliedTests
     {
-        IContainer _container;
+        private IContainer _container;
 
         public LazyWithMetadataWhenNoMatchingMetadataIsSuppliedTests()
         {

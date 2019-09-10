@@ -1,14 +1,12 @@
 ﻿using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Reflection;
-using Autofac.Integration.Mef;
 using Xunit;
 
 namespace Autofac.Integration.Mef.Test
 {
     /// <summary>
-    /// See Autofac Issue 128.
-    /// Courtesy of palpatine@kopernet.org
+    /// See Autofac Issue 128 (courtesy of palpatine@kopernet.org).
     /// </summary>
     public class LifetimeScenariosTests
     {
@@ -52,7 +50,7 @@ namespace Autofac.Integration.Mef.Test
 
             Assert.NotSame(elementFromAutofac1, elementFromAutofac2);
             Assert.NotSame(elementFromAutofac1.ImportedFormMef, elementFromAutofac2.ImportedFormMef);
-            Assert.NotSame(elementFromAutofac1.ImportedFormMef.ImportedFormAutofac, elementFromAutofac2.ImportedFormMef.ImportedFormAutofac);//fail
+            Assert.NotSame(elementFromAutofac1.ImportedFormMef.ImportedFormAutofac, elementFromAutofac2.ImportedFormMef.ImportedFormAutofac);
         }
     }
 }

@@ -5,6 +5,7 @@ using System.ComponentModel.Composition.Hosting;
 using System.Linq;
 using Autofac.Features.Metadata;
 using Autofac.Integration.Mef;
+using Autofac.Integration.Mef.Test.TestTypes;
 using Xunit;
 
 namespace Autofac.Integration.Mef.Test
@@ -106,7 +107,7 @@ namespace Autofac.Integration.Mef.Test
             var container = builder.Build();
             var rm = container.Resolve<RequiresMetadata>();
             Assert.NotNull(rm.Dependency);
-            Assert.Equal(rm.Dependency.Value, "Hello");
+            Assert.Equal("Hello", rm.Dependency.Value);
         }
 
         [Fact]
