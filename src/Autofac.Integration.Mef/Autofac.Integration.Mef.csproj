@@ -35,7 +35,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Autofac" Version="5.0.0-develop-00611" />
+    <PackageReference Include="Autofac" Version="5.0.0-develop-00634" />
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="2.9.4">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
