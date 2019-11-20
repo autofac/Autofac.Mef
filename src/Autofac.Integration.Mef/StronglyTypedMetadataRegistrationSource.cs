@@ -94,10 +94,10 @@ namespace Autofac.Integration.Mef
         {
             var rb = RegistrationBuilder
                 .ForDelegate((c, p) => new Meta<T, TMetadata>(
-                    (T)c.ResolveComponent(valueRegistration, p),
+                    (T)c.ResolveComponent(new ResolveRequest(providedService, valueRegistration, p)),
                     AttributedModelServices.GetMetadataView<TMetadata>(valueRegistration.Target.Metadata)))
                 .As(providedService)
-                .Targeting(valueRegistration);
+                .Targeting(valueRegistration, true);
 
             return rb.CreateRegistration();
         }

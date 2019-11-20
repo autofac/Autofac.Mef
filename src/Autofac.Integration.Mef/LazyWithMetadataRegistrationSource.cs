@@ -102,11 +102,11 @@ namespace Autofac.Integration.Mef
                 {
                     var context = c.Resolve<IComponentContext>();
                     return new Lazy<T, TMetadata>(
-                        () => (T)context.ResolveComponent(valueRegistration, p),
+                        () => (T)context.ResolveComponent(new ResolveRequest(providedService, valueRegistration, p)),
                         AttributedModelServices.GetMetadataView<TMetadata>(valueRegistration.Target.Metadata));
                 })
                 .As(providedService)
-                .Targeting(valueRegistration);
+                .Targeting(valueRegistration, true);
 
             return rb.CreateRegistration();
         }

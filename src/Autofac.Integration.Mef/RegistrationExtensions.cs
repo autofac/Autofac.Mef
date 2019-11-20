@@ -227,9 +227,11 @@ namespace Autofac.Integration.Mef
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
+            var service = new ContractBasedService(contractName, AttributedModelServices.GetTypeIdentity(typeof(T)));
+
             return context.ComponentRegistry
-                .RegistrationsFor(new ContractBasedService(contractName, AttributedModelServices.GetTypeIdentity(typeof(T))))
-                .Select(cpt => context.ResolveComponent(cpt, Enumerable.Empty<Parameter>()))
+                .RegistrationsFor(service)
+                .Select(cpt => context.ResolveComponent(new ResolveRequest(service, cpt, Enumerable.Empty<Parameter>())))
                 .Cast<Export>();
         }
 
@@ -243,7 +245,7 @@ namespace Autofac.Integration.Mef
                     var ctx = c.Resolve<IComponentContext>();
                     return new Export(
                         new ExportDefinition(exportConfiguration.ContractName, exportConfiguration.Metadata),
-                        () => ctx.ResolveComponent(registration, Array.Empty<Parameter>()));
+                        () => ctx.ResolveComponent(new ResolveRequest(contractService, registration, Array.Empty<Parameter>())));
                 })
                 .As(contractService)
                 .ExternallyOwned()
@@ -252,9 +254,8 @@ namespace Autofac.Integration.Mef
             registry.Register(rb.CreateRegistration());
         }
 
-        private static IEnumerable<IComponentRegistration> ComponentsForContract(this IComponentContext context, ContractBasedImportDefinition cbid)
+        private static IEnumerable<IComponentRegistration> ComponentsForContract(this IComponentContext context, ContractBasedImportDefinition cbid, ContractBasedService contractService)
         {
-            var contractService = new ContractBasedService(cbid.ContractName, cbid.RequiredTypeIdentity);
             var componentsForContract = context
                 .ComponentRegistry
                 .RegistrationsFor(contractService)
@@ -385,10 +386,12 @@ namespace Autofac.Integration.Mef
 
         private static IEnumerable<Export> ResolveExports(this IComponentContext context, ContractBasedImportDefinition cbid)
         {
-            var componentsForContract = context.ComponentsForContract(cbid);
+            var contractService = new ContractBasedService(cbid.ContractName, cbid.RequiredTypeIdentity);
+
+            var componentsForContract = context.ComponentsForContract(cbid, contractService);
 
             var exportsForContract = componentsForContract
-                .Select(cpt => context.ResolveComponent(cpt, Enumerable.Empty<Parameter>()))
+                .Select(cpt => context.ResolveComponent(new ResolveRequest(contractService, cpt, Enumerable.Empty<Parameter>())))
                 .Cast<Export>()
                 .ToList();
 
