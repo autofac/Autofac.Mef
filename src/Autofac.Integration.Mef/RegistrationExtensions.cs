@@ -68,7 +68,7 @@ namespace Autofac.Integration.Mef
 
             var configuration = new ExportConfigurationBuilder();
             configurationAction(configuration);
-            registration.OnRegistered(e => AttachExport(e.ComponentRegistry, e.ComponentRegistration, configuration));
+            registration.OnRegistered(e => AttachExport(e.ComponentRegistryBuilder, e.ComponentRegistration, configuration));
 
             return registration;
         }
@@ -236,7 +236,7 @@ namespace Autofac.Integration.Mef
         }
 
         [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "The component registry is responsible for disposal of contained registrations.")]
-        private static void AttachExport(IComponentRegistry registry, IComponentRegistration registration, ExportConfigurationBuilder exportConfiguration)
+        private static void AttachExport(IComponentRegistryBuilder registry, IComponentRegistration registration, ExportConfigurationBuilder exportConfiguration)
         {
             var contractService = new ContractBasedService(exportConfiguration.ContractName, exportConfiguration.ExportTypeIdentity);
 
