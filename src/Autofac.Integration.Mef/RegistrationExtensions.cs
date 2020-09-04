@@ -34,6 +34,7 @@ using System.Reflection;
 using Autofac.Builder;
 using Autofac.Core;
 using Autofac.Core.Registration;
+using Autofac.Core.Resolving.Pipeline;
 
 namespace Autofac.Integration.Mef
 {
@@ -230,7 +231,7 @@ namespace Autofac.Integration.Mef
             var service = new ContractBasedService(contractName, AttributedModelServices.GetTypeIdentity(typeof(T)));
 
             return context.ComponentRegistry
-                .RegistrationsFor(service)
+                .ServiceRegistrationsFor(service)
                 .Select(cpt => context.ResolveComponent(new ResolveRequest(service, cpt, Enumerable.Empty<Parameter>())))
                 .Cast<Export>();
         }
@@ -245,7 +246,7 @@ namespace Autofac.Integration.Mef
                     var ctx = c.Resolve<IComponentContext>();
                     return new Export(
                         new ExportDefinition(exportConfiguration.ContractName, exportConfiguration.Metadata),
-                        () => ctx.ResolveComponent(new ResolveRequest(contractService, registration, Array.Empty<Parameter>())));
+                        () => ctx.ResolveComponent(new ResolveRequest(contractService, new ServiceRegistration(ServicePipelines.DefaultServicePipeline, registration), Array.Empty<Parameter>())));
                 })
                 .As(contractService)
                 .ExternallyOwned()
@@ -254,11 +255,11 @@ namespace Autofac.Integration.Mef
             registry.Register(rb.CreateRegistration());
         }
 
-        private static IEnumerable<IComponentRegistration> ComponentsForContract(this IComponentContext context, ContractBasedImportDefinition cbid, ContractBasedService contractService)
+        private static IEnumerable<ServiceRegistration> ComponentsForContract(this IComponentContext context, ContractBasedImportDefinition cbid, ContractBasedService contractService)
         {
             var componentsForContract = context
                 .ComponentRegistry
-                .RegistrationsFor(contractService)
+                .ServiceRegistrationsFor(contractService)
                 .Where(cpt =>
                     !cbid.RequiredMetadata
                         .Except(cpt.Metadata.Select(m => new KeyValuePair<string, Type>(m.Key, m.Value.GetType())))
