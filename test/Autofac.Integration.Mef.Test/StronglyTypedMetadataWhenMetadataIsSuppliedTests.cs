@@ -9,7 +9,7 @@ namespace Autofac.Integration.Mef.Test
     {
         private const int SuppliedValue = 123;
 
-        private IContainer _container;
+        private readonly IContainer _container;
 
         public StronglyTypedMetadataWhenMetadataIsSuppliedTests()
         {

@@ -2,27 +2,26 @@
 
   <PropertyGroup>
     <Description>Managed Extensibility Framework integration for Autofac. Enables MEF catalogs to be loaded by the Autofac container.</Description>
-    <VersionPrefix>5.0.0</VersionPrefix>
+    <!-- VersionPrefix patched by AppVeyor -->
+    <VersionPrefix>0.0.1</VersionPrefix>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <LangVersion>latest</LangVersion>
     <NoWarn>$(NoWarn);IDE0008</NoWarn>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AssemblyName>Autofac.Integration.Mef</AssemblyName>
     <AssemblyOriginatorKeyFile>../../Autofac.snk</AssemblyOriginatorKeyFile>
     <SignAssembly>true</SignAssembly>
-    <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
     <PackageId>Autofac.Mef</PackageId>
     <PackageTags>autofac;di;ioc;dependencyinjection;aspnet;aspnetcore</PackageTags>
     <PackageReleaseNotes>Release notes are at https://github.com/autofac/Autofac.Mef/releases</PackageReleaseNotes>
-    <PackageIconUrl>https://cloud.githubusercontent.com/assets/1156571/13684110/16b8f152-e6bf-11e5-84ae-22c66c6d351a.png</PackageIconUrl>
+    <PackageIcon>icon.png</PackageIcon>
     <PackageProjectUrl>https://autofac.org</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/autofac/Autofac.Mef</RepositoryUrl>
-    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
-    <GenerateNeutralResourcesLanguageAttribute>true</GenerateNeutralResourcesLanguageAttribute>
-    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
-    <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
+    <AssemblyTitle>Autofac.Extras.AttributeMetadata</AssemblyTitle>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <Copyright>Copyright © 2015 Autofac Contributors</Copyright>
     <CodeAnalysisRuleSet>../../build/Analyzers.ruleset</CodeAnalysisRuleSet>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedAllSources>true</EmbedAllSources>
@@ -31,22 +30,25 @@
     <Authors>Autofac Contributors</Authors>
     <Company>Autofac</Company>
     <Product>Autofac</Product>
-    <NeutralLanguage>en-US</NeutralLanguage>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\..\build\icon.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Autofac" Version="6.0.0-develop-01132" />
-    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="2.9.4">
-      <PrivateAssets>All</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.4">
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.0">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-19367-01" Condition="Exists('$(MSBuildThisFileDirectory)../../.git')">
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.0">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" Condition="Exists('$(MSBuildThisFileDirectory)../../.git')">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
-      <PrivateAssets>All</PrivateAssets>
+    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.205">
+      <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="System.ComponentModel.Composition" Version="4.5.0" />
   </ItemGroup>
@@ -96,5 +98,4 @@
       <_Parameter1>$(AssemblyName).Test, PublicKey=00240000048000009400000006020000002400005253413100040000010001008728425885ef385e049261b18878327dfaaf0d666dea3bd2b0e4f18b33929ad4e5fbc9087e7eda3c1291d2de579206d9b4292456abffbe8be6c7060b36da0c33b883e3878eaf7c89fddf29e6e27d24588e81e86f3a22dd7b1a296b5f06fbfb500bbd7410faa7213ef4e2ce7622aefc03169b0324bcd30ccfe9ac8204e4960be6</_Parameter1>
     </AssemblyAttribute>
   </ItemGroup>
-
 </Project>

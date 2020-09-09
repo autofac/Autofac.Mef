@@ -98,7 +98,7 @@ namespace Autofac.Integration.Mef.Test
             builder.RegisterMetadataRegistrationSources();
             var metadata = new Dictionary<string, object>
             {
-                { "Key", "Value" }
+                { "Key", "Value" },
             };
             const string exportedString = "Hello";
             builder.RegisterInstance(exportedString).Exported(e => e.As<string>().WithMetadata(metadata));

@@ -12,7 +12,7 @@ namespace Autofac.Integration.Mef.Test
     {
         private const int SuppliedValue = 123;
 
-        private IContainer _container;
+        private readonly IContainer _container;
 
         public LazyWithMetadataWhenMetadataIsSuppliedTests()
         {
@@ -22,7 +22,7 @@ namespace Autofac.Integration.Mef.Test
 
             var catalog = new TypeCatalog(typeof(ThrowingService), typeof(ServiceConsumer));
             builder.RegisterComposablePartCatalog(catalog);
-            this._container = builder.Build();
+            _container = builder.Build();
         }
 
         public interface INameMetadata
@@ -38,7 +38,7 @@ namespace Autofac.Integration.Mef.Test
         public void InstanceShouldNotBeCreated()
         {
             // Issue #1: Lazy dependencies shouldn't be instantiated in the Lazy<T, TMetadata> relationship.
-            var serviceConsumer = this._container.Resolve<ServiceConsumer>();
+            var serviceConsumer = _container.Resolve<ServiceConsumer>();
             var service = serviceConsumer.Services?.FirstOrDefault(x => x.Metadata.Name == "will-throw-on-ctor");
             Assert.NotNull(service);
             Assert.False(service.IsValueCreated);
@@ -47,21 +47,21 @@ namespace Autofac.Integration.Mef.Test
         [Fact]
         public void ValuesAreProvidedFromMetadata()
         {
-            var meta = this._container.Resolve<Lazy<object, IMeta>>();
+            var meta = _container.Resolve<Lazy<object, IMeta>>();
             Assert.Equal(SuppliedValue, meta.Metadata.TheInt);
         }
 
         [Fact]
         public void ValuesBubbleUpThroughAdapters()
         {
-            var meta = this._container.Resolve<Lazy<Func<object>, IMeta>>();
+            var meta = _container.Resolve<Lazy<Func<object>, IMeta>>();
             Assert.Equal(SuppliedValue, meta.Metadata.TheInt);
         }
 
         [Fact]
         public void ValuesProvidedFromMetadataOverrideDefaults()
         {
-            var meta = this._container.Resolve<Lazy<object, IMetaWithDefault>>();
+            var meta = _container.Resolve<Lazy<object, IMetaWithDefault>>();
             Assert.Equal(SuppliedValue, meta.Metadata.TheInt);
         }
 

@@ -26,6 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using Autofac.Builder;
@@ -54,8 +55,7 @@ namespace Autofac.Integration.Mef
         {
             if (registrationAccessor == null) throw new ArgumentNullException(nameof(registrationAccessor));
 
-            var swt = service as IServiceWithType;
-            if (swt == null || !swt.ServiceType.IsGenericTypeDefinedBy(typeof(Lazy<,>)))
+            if (!(service is IServiceWithType swt) || !swt.ServiceType.IsGenericTypeDefinedBy(typeof(Lazy<,>)))
             {
                 return Enumerable.Empty<IComponentRegistration>();
             }
@@ -95,6 +95,7 @@ namespace Autofac.Integration.Mef
         /// <returns>
         /// An <see cref="IComponentRegistration"/> containing a <see cref="Lazy{T, TMetadata}"/>.
         /// </returns>
+        [SuppressMessage("IDE0051", "IDE0051", Justification = "Method is consumed via reflection in static member variable in this class.")]
         private static IComponentRegistration CreateLazyRegistration<T, TMetadata>(Service providedService, ServiceRegistration valueRegistration)
         {
             var rb = RegistrationBuilder.ForDelegate(

@@ -8,7 +8,7 @@ namespace Autofac.Integration.Mef.Test
 {
     public class StronglyTypedMetadataWhenNoMatchingMetadataIsSuppliedTests
     {
-        private IContainer _container;
+        private readonly IContainer _container;
 
         public StronglyTypedMetadataWhenNoMatchingMetadataIsSuppliedTests()
         {
