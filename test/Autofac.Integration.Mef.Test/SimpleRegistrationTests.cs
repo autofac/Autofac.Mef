@@ -153,8 +153,8 @@ namespace Autofac.Integration.Mef.Test
 
             public ImportsDuplicateMefClass(ImportsMefDependency first, ImportsMefDependency second)
             {
-                this.First = first;
-                this.Second = second;
+                First = first;
+                Second = second;
             }
         }
     }

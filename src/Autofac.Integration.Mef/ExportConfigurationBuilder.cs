@@ -61,10 +61,8 @@ namespace Autofac.Integration.Mef
         /// <returns>Builder for additional configuration.</returns>
         public ExportConfigurationBuilder AsNamed<TExportedValue>(string name)
         {
-            if (name == null) throw new ArgumentNullException(nameof(name));
-
+            ContractName = name ?? throw new ArgumentNullException(nameof(name));
             WithMetadata(CompositionConstants.ExportTypeIdentityMetadataName, AttributedModelServices.GetTypeIdentity(typeof(TExportedValue)));
-            ContractName = name;
             return this;
         }
 

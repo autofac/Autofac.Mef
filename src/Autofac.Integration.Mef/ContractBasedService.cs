@@ -34,9 +34,6 @@ namespace Autofac.Integration.Mef
     /// </summary>
     public class ContractBasedService : Service
     {
-        private readonly string _exportTypeIdentity;
-        private readonly string _contractName;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ContractBasedService"/> class.
         /// </summary>
@@ -54,27 +51,21 @@ namespace Autofac.Integration.Mef
                 exportTypeIdentity = "System.Object";
             }
 
-            _exportTypeIdentity = exportTypeIdentity;
+            ExportTypeIdentity = exportTypeIdentity;
 
-            _contractName = contractName;
+            ContractName = contractName;
         }
 
         /// <summary>
         /// Gets the type identity of the objects exported under the contract.
         /// </summary>
-        public string ExportTypeIdentity
-        {
-            get { return _exportTypeIdentity; }
-        }
+        public string ExportTypeIdentity { get; }
 
         /// <summary>
         /// Gets the name of the contract.
         /// </summary>
         /// <value>The name of the contract.</value>
-        public string ContractName
-        {
-            get { return _contractName; }
-        }
+        public string ContractName { get; }
 
         /// <summary>
         /// Gets a human-readable description of the service.
