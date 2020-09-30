@@ -19,7 +19,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/autofac/Autofac.Mef</RepositoryUrl>
-    <AssemblyTitle>Autofac.Extras.AttributeMetadata</AssemblyTitle>
+    <AssemblyTitle>Autofac.Mef</AssemblyTitle>
     <NeutralLanguage>en-US</NeutralLanguage>
     <Copyright>Copyright © 2015 Autofac Contributors</Copyright>
     <CodeAnalysisRuleSet>../../build/Analyzers.ruleset</CodeAnalysisRuleSet>
