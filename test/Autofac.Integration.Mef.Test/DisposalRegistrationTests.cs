@@ -70,7 +70,7 @@ namespace Autofac.Integration.Mef.Test
             {
                 get
                 {
-                    return this.IsDisposed;
+                    return IsDisposed;
                 }
             }
         }

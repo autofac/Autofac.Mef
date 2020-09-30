@@ -34,6 +34,7 @@ using System.Reflection;
 using Autofac.Builder;
 using Autofac.Core;
 using Autofac.Core.Registration;
+using Autofac.Core.Resolving.Pipeline;
 
 namespace Autofac.Integration.Mef
 {
@@ -46,13 +47,13 @@ namespace Autofac.Integration.Mef
         /// Reference to the internal <see cref="System.Type"/> for <c>System.ComponentModel.Composition.ContractNameServices</c>,
         /// which is responsible for mapping types to MEF contract names.
         /// </summary>
-        private static readonly Type _contractNameServices = typeof(ExportAttribute).Assembly.GetType("System.ComponentModel.Composition.ContractNameServices", true);
+        private static readonly Type ContractNameServices = typeof(ExportAttribute).Assembly.GetType("System.ComponentModel.Composition.ContractNameServices", true);
 
         /// <summary>
         /// Reference to the property <c>System.ComponentModel.Composition.ContractNameServices.TypeIdentityCache</c>,
-        /// which holds the dictionary of <see cref="System.Type"/> to <see cref="System.String"/> contract name mappings.
+        /// which holds the dictionary of <see cref="System.Type"/> to <see cref="string"/> contract name mappings.
         /// </summary>
-        private static readonly PropertyInfo _typeIdentityCache = _contractNameServices.GetProperty("TypeIdentityCache", BindingFlags.GetProperty | BindingFlags.Static | BindingFlags.NonPublic);
+        private static readonly PropertyInfo TypeIdentityCache = ContractNameServices.GetProperty("TypeIdentityCache", BindingFlags.GetProperty | BindingFlags.Static | BindingFlags.NonPublic);
 
         /// <summary>
         /// Expose the registered service to MEF parts as an export.
@@ -230,7 +231,7 @@ namespace Autofac.Integration.Mef
             var service = new ContractBasedService(contractName, AttributedModelServices.GetTypeIdentity(typeof(T)));
 
             return context.ComponentRegistry
-                .RegistrationsFor(service)
+                .ServiceRegistrationsFor(service)
                 .Select(cpt => context.ResolveComponent(new ResolveRequest(service, cpt, Enumerable.Empty<Parameter>())))
                 .Cast<Export>();
         }
@@ -245,7 +246,7 @@ namespace Autofac.Integration.Mef
                     var ctx = c.Resolve<IComponentContext>();
                     return new Export(
                         new ExportDefinition(exportConfiguration.ContractName, exportConfiguration.Metadata),
-                        () => ctx.ResolveComponent(new ResolveRequest(contractService, registration, Array.Empty<Parameter>())));
+                        () => ctx.ResolveComponent(new ResolveRequest(contractService, new ServiceRegistration(ServicePipelines.DefaultServicePipeline, registration), Array.Empty<Parameter>())));
                 })
                 .As(contractService)
                 .ExternallyOwned()
@@ -254,11 +255,11 @@ namespace Autofac.Integration.Mef
             registry.Register(rb.CreateRegistration());
         }
 
-        private static IEnumerable<IComponentRegistration> ComponentsForContract(this IComponentContext context, ContractBasedImportDefinition cbid, ContractBasedService contractService)
+        private static IEnumerable<ServiceRegistration> ComponentsForContract(this IComponentContext context, ContractBasedImportDefinition cbid, ContractBasedService contractService)
         {
             var componentsForContract = context
                 .ComponentRegistry
-                .RegistrationsFor(contractService)
+                .ServiceRegistrationsFor(contractService)
                 .Where(cpt =>
                     !cbid.RequiredMetadata
                         .Except(cpt.Metadata.Select(m => new KeyValuePair<string, Type>(m.Key, m.Value.GetType())))
@@ -283,8 +284,7 @@ namespace Autofac.Integration.Mef
 
         private static IEnumerable<Service> DefaultExposedServicesMapper(ExportDefinition ed)
         {
-            Service service;
-            if (TryMapService(ed, out service))
+            if (TryMapService(ed, out Service service))
             {
                 yield return service;
             }
@@ -292,15 +292,13 @@ namespace Autofac.Integration.Mef
 
         private static Type FindType(string exportTypeIdentity)
         {
-            var cache = (Dictionary<Type, string>)_typeIdentityCache.GetValue(null, null);
+            var cache = (Dictionary<Type, string>)TypeIdentityCache.GetValue(null, null);
             return cache.FirstOrDefault(kvp => kvp.Value == exportTypeIdentity).Key;
         }
 
         private static string GetTypeIdentity(ExportDefinition exportDef)
         {
-            object typeIdentity;
-
-            if (exportDef.Metadata.TryGetValue(CompositionConstants.ExportTypeIdentityMetadataName, out typeIdentity))
+            if (exportDef.Metadata.TryGetValue(CompositionConstants.ExportTypeIdentityMetadataName, out object typeIdentity))
             {
                 return (string)typeIdentity;
             }
@@ -322,9 +320,7 @@ namespace Autofac.Integration.Mef
         {
             if (metadata != null)
             {
-                object pcp;
-
-                if (metadata.TryGetValue(CompositionConstants.PartCreationPolicyMetadataName, out pcp))
+                if (metadata.TryGetValue(CompositionConstants.PartCreationPolicyMetadataName, out object pcp))
                 {
                     // Here we use the MEF default of Shared, but using the Autofac default may make more sense.
                     if (pcp != null && (CreationPolicy)pcp == CreationPolicy.NonShared)
@@ -404,8 +400,7 @@ namespace Autofac.Integration.Mef
                 .ImportDefinitions
                 .Where(id => id.IsPrerequisite == prerequisite))
             {
-                var cbid = import as ContractBasedImportDefinition;
-                if (cbid == null)
+                if (!(import is ContractBasedImportDefinition cbid))
                 {
                     throw new NotSupportedException(string.Format(CultureInfo.CurrentCulture, RegistrationExtensionsResources.ContractBasedOnly, import));
                 }
