@@ -54,6 +54,18 @@ namespace Autofac.Integration.Mef
         }
 
         /// <summary>
+        /// Export the component under typed contract <paramref name="contractType"/>.
+        /// </summary>
+        /// <param name="contractType">Contract type.</param>
+        /// <returns>Builder for additional configuration.</returns>
+        public ExportConfigurationBuilder As(Type contractType)
+        {
+            WithMetadata(CompositionConstants.ExportTypeIdentityMetadataName, AttributedModelServices.GetTypeIdentity(contractType));
+            ContractName = AttributedModelServices.GetContractName(contractType);
+            return this;
+        }
+
+        /// <summary>
         /// Export the component under named contract <paramref name="name"/>.
         /// </summary>
         /// <typeparam name="TExportedValue">Exported value type.</typeparam>
@@ -63,6 +75,19 @@ namespace Autofac.Integration.Mef
         {
             ContractName = name ?? throw new ArgumentNullException(nameof(name));
             WithMetadata(CompositionConstants.ExportTypeIdentityMetadataName, AttributedModelServices.GetTypeIdentity(typeof(TExportedValue)));
+            return this;
+        }
+
+        /// <summary>
+        /// Export the component under named contract <paramref name="name"/>.
+        /// </summary>
+        /// <param name="exportedValueType">Exported value type.</param>
+        /// <param name="name">Contract name.</param>
+        /// <returns>Builder for additional configuration.</returns>
+        public ExportConfigurationBuilder AsNamed(Type exportedValueType, string name)
+        {
+            ContractName = name ?? throw new ArgumentNullException(nameof(name));
+            WithMetadata(CompositionConstants.ExportTypeIdentityMetadataName, AttributedModelServices.GetTypeIdentity(exportedValueType));
             return this;
         }
 
