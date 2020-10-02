@@ -89,6 +89,7 @@ namespace Autofac.Integration.Mef.Test
             Assert.NotNull(resolved.Second);
         }
 
+        [Theory]
         public static void RegisterAutofacDependencyUsingAttribute(ContainerBuilder builder, string name = "", int metaInt = 0)
         {
             foreach (Type type in Assembly.GetExecutingAssembly().GetTypes().Where(type =>
@@ -110,6 +111,7 @@ namespace Autofac.Integration.Mef.Test
             }
         }
 
+        [Theory]
         public static void RegisterAutofacDependencyUsingInterface(
             ContainerBuilder builder,
             bool registerAsInterfaceType = false)
@@ -190,7 +192,7 @@ namespace Autofac.Integration.Mef.Test
         }
 
         [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
-        sealed class ExportFromAutofacAttribute : Attribute
+        public sealed class ExportFromAutofacAttribute : Attribute
         {
         }
     }
