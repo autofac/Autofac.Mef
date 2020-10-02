@@ -18,7 +18,9 @@ namespace Autofac.Integration.Mef.Test
             var builder = new ContainerBuilder();
             var catalog = new TypeCatalog(typeof(ImportManyDependency));
             builder.RegisterComposablePartCatalog(catalog);
-            RegisterAutofacDependencyUsingInterface(builder, true);
+            foreach (Type type in Assembly.GetExecutingAssembly().GetTypes().Where(type =>
+                typeof(IAutofacDependency).IsAssignableFrom(type) && !type.IsInterface))
+                builder.RegisterType(type).Exported(x => x.As(typeof(IAutofacDependency)));
             var container = builder.Build();
             var resolve = container.Resolve<ImportManyDependency>();
             Assert.Equal(2, resolve.Dependencies.Count());
@@ -31,7 +33,9 @@ namespace Autofac.Integration.Mef.Test
             var catalog = new TypeCatalog(typeof(ImportWithMetadataDependency));
             builder.RegisterComposablePartCatalog(catalog);
             const int metaInt = 10;
-            RegisterAutofacDependencyUsingAttribute(builder, "", metaInt);
+            foreach (Type type in Assembly.GetExecutingAssembly().GetTypes().Where(type =>
+                Attribute.GetCustomAttribute(type, typeof(ExportFromAutofacAttribute)) != null))
+                builder.RegisterType(type).Exported(x => x.As(type).WithMetadata("TheInt", metaInt));
             var container = builder.Build();
             var resolve = container.Resolve<ImportWithMetadataDependency>();
             Assert.NotNull(resolve);
@@ -44,7 +48,9 @@ namespace Autofac.Integration.Mef.Test
         {
             var builder = new ContainerBuilder();
             const string n = "name";
-            RegisterAutofacDependencyUsingAttribute(builder, n);
+            foreach (Type type in Assembly.GetExecutingAssembly().GetTypes().Where(type =>
+                Attribute.GetCustomAttribute(type, typeof(ExportFromAutofacAttribute)) != null))
+                builder.RegisterType(type).Exported(x => x.AsNamed(type, n));
             var container = builder.Build();
             var exports = container.ResolveExports<IAutofacDependency>(n);
             Assert.Empty(exports);
@@ -56,7 +62,9 @@ namespace Autofac.Integration.Mef.Test
             var builder = new ContainerBuilder();
             var catalog = new TypeCatalog(typeof(ImportsDuplicateAutofacDependency));
             builder.RegisterComposablePartCatalog(catalog);
-            RegisterAutofacDependencyUsingAttribute(builder);
+            foreach (Type type in Assembly.GetExecutingAssembly().GetTypes().Where(type =>
+                Attribute.GetCustomAttribute(type, typeof(ExportFromAutofacAttribute)) != null))
+                builder.RegisterType(type).Exported(x => x.As(type));
             var container = builder.Build();
             var resolved = container.Resolve<ImportsDuplicateAutofacDependency>();
             Assert.NotNull(resolved.First);
@@ -69,7 +77,9 @@ namespace Autofac.Integration.Mef.Test
             var builder = new ContainerBuilder();
             var catalog = new TypeCatalog(typeof(ImportsDuplicateAutofacDependency));
             builder.RegisterComposablePartCatalog(catalog);
-            RegisterAutofacDependencyUsingInterface(builder);
+            foreach (Type type in Assembly.GetExecutingAssembly().GetTypes().Where(type =>
+                typeof(IAutofacDependency).IsAssignableFrom(type) && !type.IsInterface))
+                builder.RegisterType(type).Exported(x => x.As(type));
             var container = builder.Build();
             var resolved = container.Resolve<ImportsDuplicateAutofacDependency>();
             Assert.NotNull(resolved.First);
@@ -82,46 +92,13 @@ namespace Autofac.Integration.Mef.Test
             var builder = new ContainerBuilder();
             var catalog = new TypeCatalog(typeof(ImportsMixedAutofacMefDependency), typeof(MefDependency));
             builder.RegisterComposablePartCatalog(catalog);
-            RegisterAutofacDependencyUsingAttribute(builder);
+            foreach (Type type in Assembly.GetExecutingAssembly().GetTypes().Where(type =>
+                Attribute.GetCustomAttribute(type, typeof(ExportFromAutofacAttribute)) != null))
+                builder.RegisterType(type).Exported(x => x.As(type));
             var container = builder.Build();
             var resolved = container.Resolve<ImportsMixedAutofacMefDependency>();
             Assert.NotNull(resolved.First);
             Assert.NotNull(resolved.Second);
-        }
-
-        [Theory]
-        public static void RegisterAutofacDependencyUsingAttribute(ContainerBuilder builder, string name = "", int metaInt = 0)
-        {
-            foreach (Type type in Assembly.GetExecutingAssembly().GetTypes().Where(type =>
-                Attribute.GetCustomAttribute(type, typeof(ExportFromAutofacAttribute)) != null))
-            {
-                builder.RegisterType(type).Exported(x =>
-                {
-                    if (metaInt > 0)
-                    {
-                        x.As(type).WithMetadata("TheInt", metaInt);
-                    }
-                    else
-                    {
-                        if (string.IsNullOrEmpty(name))
-                            x.As(type);
-                        else x.AsNamed(type, name);
-                    }
-                });
-            }
-        }
-
-        [Theory]
-        public static void RegisterAutofacDependencyUsingInterface(
-            ContainerBuilder builder,
-            bool registerAsInterfaceType = false)
-        {
-            foreach (Type type in Assembly.GetExecutingAssembly().GetTypes().Where(type =>
-                typeof(IAutofacDependency).IsAssignableFrom(type) && !type.IsInterface))
-            {
-                builder.RegisterType(type)
-                    .Exported(x => x.As(registerAsInterfaceType ? typeof(IAutofacDependency) : type));
-            }
         }
 
         public interface IAutofacDependency
