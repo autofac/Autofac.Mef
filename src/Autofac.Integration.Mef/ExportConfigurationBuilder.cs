@@ -56,6 +56,7 @@ namespace Autofac.Integration.Mef
         /// <summary>
         /// Export the component under typed contract <paramref name="contractType"/>.
         /// </summary>
+        /// <param name="contractType">Contract type.</param>
         /// <returns>Builder for additional configuration.</returns>
         public ExportConfigurationBuilder As(Type contractType)
         {
