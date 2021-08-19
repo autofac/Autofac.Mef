@@ -29,6 +29,7 @@ namespace Autofac.Integration.Mef
 
         private delegate IComponentRegistration RegistrationCreator(Service service, ServiceRegistration valueRegistration);
 
+        /// <inheritdoc />
         public IEnumerable<IComponentRegistration> RegistrationsFor(Service service, Func<Service, IEnumerable<ServiceRegistration>> registrationAccessor)
         {
             if (registrationAccessor == null)
@@ -52,6 +53,7 @@ namespace Autofac.Integration.Mef
                 .Select(v => registrationCreator(service, v));
         }
 
+        /// <inheritdoc />
         public bool IsAdapterForIndividualComponents
         {
             get
@@ -60,6 +62,7 @@ namespace Autofac.Integration.Mef
             }
         }
 
+        /// <inheritdoc />
         public override string ToString()
         {
             return LazyWithMetadataRegistrationSourceResources.LazyWithMetadataRegistrationSourceDescription;
