@@ -5,11 +5,11 @@
 # 4: dotnet / NuGet package restore failure
 
 <#
-.SYNOPSIS
-    Gets the set of directories in which projects are available for compile/processing.
+ .SYNOPSIS
+  Gets the set of directories in which projects are available for compile/processing.
 
-.PARAMETER RootPath
-    Path where searching for project directories should begin.
+ .PARAMETER RootPath
+  Path where searching for project directories should begin.
 #>
 function Get-DotNetProjectDirectory {
     [CmdletBinding()]
@@ -92,11 +92,19 @@ function Add-Path {
         [string]
         $Path
     )
-    $pathValues = $env:PATH.Split(";");
+
+    $pathSeparator = ":";
+
+    if ($IsWindows) {
+        $pathSeparator = ";";
+    }
+
+    $pathValues = $env:PATH.Split($pathSeparator);
     if ($pathValues -Contains $Path) {
       return;
     }
-    $env:PATH = "$Path;$env:PATH"
+    
+    $env:PATH = "${Path}${pathSeparator}$env:PATH"
 }
 
 <#
@@ -126,17 +134,17 @@ function Invoke-DotNetBuild {
 }
 
 <#
-.SYNOPSIS
-    Invokes the dotnet utility to package a project.
+ .SYNOPSIS
+  Invokes the dotnet utility to package a project.
 
-.PARAMETER ProjectDirectory
-    Path to the directory containing the project to package.
+ .PARAMETER ProjectDirectory
+  Path to the directory containing the project to package.
 
-.PARAMETER PackagesPath
-    Path to the "artifacts/packages" folder where packages should go.
+ .PARAMETER PackagesPath
+  Path to the "artifacts/packages" folder where packages should go.
 
-.PARAMETER VersionSuffix
-    The version suffix to use for the NuGet package version.
+ .PARAMETER VersionSuffix
+  The version suffix to use for the NuGet package version.
 #>
 function Invoke-DotNetPack {
     [CmdletBinding()]
@@ -210,8 +218,7 @@ function Invoke-Test {
                 /p:CoverletOutput="../../artifacts/coverage/$($Project.Name)/" `
                 /p:CoverletOutputFormat="json%2clcov" `
                 /p:ExcludeByAttribute=CompilerGeneratedAttribute `
-                /p:ExcludeByAttribute=GeneratedCodeAttribute `
-                /p:Exclude="[Autofac.Test.Scenarios.ScannedAssembly]*"
+                /p:ExcludeByAttribute=GeneratedCodeAttribute
 
             if ($LASTEXITCODE -ne 0) {
                 Pop-Location
