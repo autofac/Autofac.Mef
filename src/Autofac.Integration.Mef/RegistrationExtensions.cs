@@ -1,27 +1,6 @@
-﻿// This software is part of the Autofac IoC container
-// Copyright © 2011 Autofac Contributors
-// https://autofac.org
-//
-// Permission is hereby granted, free of charge, to any person
-// obtaining a copy of this software and associated documentation
-// files (the "Software"), to deal in the Software without
-// restriction, including without limitation the rights to use,
-// copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the
-// Software is furnished to do so, subject to the following
-// conditions:
-//
-// The above copyright notice and this permission notice shall be
-// included in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-// OTHER DEALINGS IN THE SOFTWARE.
+﻿// Copyright (c) Autofac Project. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -64,8 +43,15 @@ namespace Autofac.Integration.Mef
         public static IRegistrationBuilder<TLimit, TActivatorData, TSingleRegistrationStyle> Exported<TLimit, TActivatorData, TSingleRegistrationStyle>(this IRegistrationBuilder<TLimit, TActivatorData, TSingleRegistrationStyle> registration, Action<ExportConfigurationBuilder> configurationAction)
             where TSingleRegistrationStyle : SingleRegistrationStyle
         {
-            if (registration == null) throw new ArgumentNullException(nameof(registration));
-            if (configurationAction == null) throw new ArgumentNullException(nameof(configurationAction));
+            if (registration == null)
+            {
+                throw new ArgumentNullException(nameof(registration));
+            }
+
+            if (configurationAction == null)
+            {
+                throw new ArgumentNullException(nameof(configurationAction));
+            }
 
             var configuration = new ExportConfigurationBuilder();
             configurationAction(configuration);
@@ -85,8 +71,15 @@ namespace Autofac.Integration.Mef
         /// </remarks>
         public static void RegisterComposablePartCatalog(this ContainerBuilder builder, ComposablePartCatalog catalog)
         {
-            if (builder == null) throw new ArgumentNullException(nameof(builder));
-            if (catalog == null) throw new ArgumentNullException(nameof(catalog));
+            if (builder == null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            if (catalog == null)
+            {
+                throw new ArgumentNullException(nameof(catalog));
+            }
 
             RegisterComposablePartCatalog(builder, catalog, DefaultExposedServicesMapper);
         }
@@ -102,9 +95,20 @@ namespace Autofac.Integration.Mef
         /// </remarks>
         public static void RegisterComposablePartCatalog(this ContainerBuilder builder, ComposablePartCatalog catalog, params Service[] interchangeServices)
         {
-            if (builder == null) throw new ArgumentNullException(nameof(builder));
-            if (catalog == null) throw new ArgumentNullException(nameof(catalog));
-            if (interchangeServices == null) throw new ArgumentNullException(nameof(interchangeServices));
+            if (builder == null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            if (catalog == null)
+            {
+                throw new ArgumentNullException(nameof(catalog));
+            }
+
+            if (interchangeServices == null)
+            {
+                throw new ArgumentNullException(nameof(interchangeServices));
+            }
 
             RegisterComposablePartCatalog(builder, catalog, ed =>
                 interchangeServices
@@ -125,9 +129,20 @@ namespace Autofac.Integration.Mef
         /// <param name="exposedServicesMapper">A mapping function to transform ExportDefinitions into Services.</param>
         public static void RegisterComposablePartCatalog(this ContainerBuilder builder, ComposablePartCatalog catalog, Func<ExportDefinition, IEnumerable<Service>> exposedServicesMapper)
         {
-            if (builder == null) throw new ArgumentNullException(nameof(builder));
-            if (catalog == null) throw new ArgumentNullException(nameof(catalog));
-            if (exposedServicesMapper == null) throw new ArgumentNullException(nameof(exposedServicesMapper));
+            if (builder == null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            if (catalog == null)
+            {
+                throw new ArgumentNullException(nameof(catalog));
+            }
+
+            if (exposedServicesMapper == null)
+            {
+                throw new ArgumentNullException(nameof(exposedServicesMapper));
+            }
 
             builder.RegisterInstance(catalog).As(new UniqueService());
 
@@ -145,9 +160,20 @@ namespace Autofac.Integration.Mef
         /// <param name="exposedServicesMapper">A mapping function to transform ExportDefinitions into Services.</param>
         public static void RegisterComposablePartDefinition(this ContainerBuilder builder, ComposablePartDefinition partDefinition, Func<ExportDefinition, IEnumerable<Service>> exposedServicesMapper)
         {
-            if (builder == null) throw new ArgumentNullException(nameof(builder));
-            if (partDefinition == null) throw new ArgumentNullException(nameof(partDefinition));
-            if (exposedServicesMapper == null) throw new ArgumentNullException(nameof(exposedServicesMapper));
+            if (builder == null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            if (partDefinition == null)
+            {
+                throw new ArgumentNullException(nameof(partDefinition));
+            }
+
+            if (exposedServicesMapper == null)
+            {
+                throw new ArgumentNullException(nameof(exposedServicesMapper));
+            }
 
             var partId = new UniqueService();
             var partRegistration = CreateBasePartRegistration(builder, partDefinition, partId);
@@ -184,9 +210,20 @@ namespace Autofac.Integration.Mef
         /// <param name="exposedServicesMapper">A mapping function to transform ExportDefinitions into Services.</param>
         public static void RegisterComposablePartType(this ContainerBuilder builder, Type partType, Func<ExportDefinition, IEnumerable<Service>> exposedServicesMapper)
         {
-            if (builder == null) throw new ArgumentNullException(nameof(builder));
-            if (partType == null) throw new ArgumentNullException(nameof(partType));
-            if (exposedServicesMapper == null) throw new ArgumentNullException(nameof(exposedServicesMapper));
+            if (builder == null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            if (partType == null)
+            {
+                throw new ArgumentNullException(nameof(partType));
+            }
+
+            if (exposedServicesMapper == null)
+            {
+                throw new ArgumentNullException(nameof(exposedServicesMapper));
+            }
 
             RegisterComposablePartDefinition(
                 builder,
@@ -201,7 +238,10 @@ namespace Autofac.Integration.Mef
         /// <param name="builder">The container builder.</param>
         public static void RegisterMetadataRegistrationSources(this ContainerBuilder builder)
         {
-            if (builder == null) throw new ArgumentNullException(nameof(builder));
+            if (builder == null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
 
             builder.RegisterSource(new LazyWithMetadataRegistrationSource());
             builder.RegisterSource(new StronglyTypedMetadataRegistrationSource());
@@ -226,7 +266,10 @@ namespace Autofac.Integration.Mef
         /// <returns>A list of exports.</returns>
         public static IEnumerable<Export> ResolveExports<T>(this IComponentContext context, string contractName)
         {
-            if (context == null) throw new ArgumentNullException(nameof(context));
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
 
             var service = new ContractBasedService(contractName, AttributedModelServices.GetTypeIdentity(typeof(T)));
 
@@ -255,18 +298,18 @@ namespace Autofac.Integration.Mef
             registry.Register(rb.CreateRegistration());
         }
 
-        private static IEnumerable<ServiceRegistration> ComponentsForContract(this IComponentContext context, ContractBasedImportDefinition cbid, ContractBasedService contractService)
+        private static IEnumerable<ServiceRegistration> ComponentsForContract(this IComponentContext context, ContractBasedImportDefinition definition, ContractBasedService contractService)
         {
             var componentsForContract = context
                 .ComponentRegistry
                 .ServiceRegistrationsFor(contractService)
                 .Where(cpt =>
-                    !cbid.RequiredMetadata
+                    !definition.RequiredMetadata
                         .Except(cpt.Metadata.Select(m => new KeyValuePair<string, Type>(m.Key, m.Value.GetType())))
                         .Any())
                 .ToList();
 
-            if (cbid.Cardinality == ImportCardinality.ExactlyOne && componentsForContract.Count == 0)
+            if (definition.Cardinality == ImportCardinality.ExactlyOne && componentsForContract.Count == 0)
             {
                 throw new ComponentNotRegisteredException(contractService);
             }
@@ -368,23 +411,23 @@ namespace Autofac.Integration.Mef
 
             if (additionalServices.Length > 0)
             {
-                var addlReg = builder.Register(c => ((Export)c.ResolveService(exportId)).Value)
+                var additionalRegistration = builder.Register(c => ((Export)c.ResolveService(exportId)).Value)
                             .As(additionalServices)
                             .ExternallyOwned()
                             .WithMetadata(exportDef.Metadata);
 
                 if (exportIsShared)
                 {
-                    addlReg.SingleInstance();
+                    additionalRegistration.SingleInstance();
                 }
             }
         }
 
-        private static IEnumerable<Export> ResolveExports(this IComponentContext context, ContractBasedImportDefinition cbid)
+        private static IEnumerable<Export> ResolveExports(this IComponentContext context, ContractBasedImportDefinition definition)
         {
-            var contractService = new ContractBasedService(cbid.ContractName, cbid.RequiredTypeIdentity);
+            var contractService = new ContractBasedService(definition.ContractName, definition.RequiredTypeIdentity);
 
-            var componentsForContract = context.ComponentsForContract(cbid, contractService);
+            var componentsForContract = context.ComponentsForContract(definition, contractService);
 
             var exportsForContract = componentsForContract
                 .Select(cpt => context.ResolveComponent(new ResolveRequest(contractService, cpt, Enumerable.Empty<Parameter>())))
@@ -400,12 +443,12 @@ namespace Autofac.Integration.Mef
                 .ImportDefinitions
                 .Where(id => id.IsPrerequisite == prerequisite))
             {
-                if (!(import is ContractBasedImportDefinition cbid))
+                if (!(import is ContractBasedImportDefinition definition))
                 {
                     throw new NotSupportedException(string.Format(CultureInfo.CurrentCulture, RegistrationExtensionsResources.ContractBasedOnly, import));
                 }
 
-                var exportsForContract = context.ResolveExports(cbid);
+                var exportsForContract = context.ResolveExports(definition);
                 composablePart.SetImport(import, exportsForContract);
             }
         }
