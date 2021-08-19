@@ -8,7 +8,10 @@ try {
 
     $artifactsPath = "$PSScriptRoot/artifacts"
     $packagesPath = "$artifactsPath/packages"
-    $sdkVersion = (Get-Content "$PSScriptRoot/global.json" | ConvertFrom-Json).sdk.version
+
+    $globalJson = (Get-Content "$PSScriptRoot/global.json" | ConvertFrom-Json -NoEnumerate);
+
+    $sdkVersion = $globalJson.sdk.version
 
     # Clean up artifacts folder
     if (Test-Path $artifactsPath) {
@@ -17,8 +20,12 @@ try {
     }
 
     # Install dotnet CLI
-    Write-Message "Installing .NET Core SDK version $sdkVersion"
     Install-DotNetCli -Version $sdkVersion
+
+    foreach ($additional in $globalJson.additionalSdks)
+    {
+        Install-DotNetCli -Version $additional;
+    }
 
     # Write out dotnet information
     & dotnet --info
@@ -46,7 +53,7 @@ try {
         # Generate Coverage Report
         Write-Message "Generating Codecov Report"
         Invoke-WebRequest -Uri 'https://codecov.io/bash' -OutFile codecov.sh
-        & bash codecov.sh -f "coverage.info"
+        & bash codecov.sh -f "artifacts/coverage/*/coverage*.info"
     }
 
     # Finished
