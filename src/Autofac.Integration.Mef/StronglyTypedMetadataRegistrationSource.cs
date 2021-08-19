@@ -56,7 +56,10 @@ namespace Autofac.Integration.Mef
 
         public IEnumerable<IComponentRegistration> RegistrationsFor(Service service, Func<Service, IEnumerable<ServiceRegistration>> registrationAccessor)
         {
-            if (registrationAccessor == null) throw new ArgumentNullException(nameof(registrationAccessor));
+            if (registrationAccessor == null)
+            {
+                throw new ArgumentNullException(nameof(registrationAccessor));
+            }
 
             if (!(service is IServiceWithType swt) || !swt.ServiceType.IsGenericTypeDefinedBy(typeof(Meta<,>)))
             {

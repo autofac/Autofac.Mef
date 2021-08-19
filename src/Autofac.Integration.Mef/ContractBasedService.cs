@@ -41,7 +41,10 @@ namespace Autofac.Integration.Mef
         /// <param name="exportTypeIdentity">Type identity of the objects exported under the contract.</param>
         public ContractBasedService(string contractName, string exportTypeIdentity)
         {
-            if (string.IsNullOrEmpty(contractName)) throw new ArgumentOutOfRangeException(nameof(contractName));
+            if (string.IsNullOrEmpty(contractName))
+            {
+                throw new ArgumentOutOfRangeException(nameof(contractName));
+            }
 
             if (exportTypeIdentity == null)
             {
@@ -92,7 +95,9 @@ namespace Autofac.Integration.Mef
             var that = obj as ContractBasedService;
 
             if (that == null)
+            {
                 return false;
+            }
 
             return ContractName == that.ContractName && ExportTypeIdentity == that.ExportTypeIdentity;
         }

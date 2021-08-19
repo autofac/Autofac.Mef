@@ -30,8 +30,15 @@ namespace Autofac.Integration.Mef.Util
     {
         internal static bool IsGenericTypeDefinedBy(this Type @this, Type openGeneric)
         {
-            if (@this == null) throw new ArgumentNullException(nameof(@this));
-            if (openGeneric == null) throw new ArgumentNullException(nameof(openGeneric));
+            if (@this == null)
+            {
+                throw new ArgumentNullException(nameof(@this));
+            }
+
+            if (openGeneric == null)
+            {
+                throw new ArgumentNullException(nameof(openGeneric));
+            }
 
             return !@this.ContainsGenericParameters && @this.IsGenericType && @this.GetGenericTypeDefinition() == openGeneric;
         }

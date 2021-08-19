@@ -118,7 +118,10 @@ namespace Autofac.Integration.Mef
         /// </exception>
         public ExportConfigurationBuilder WithMetadata(IEnumerable<KeyValuePair<string, object>> metadata)
         {
-            if (metadata == null) throw new ArgumentNullException(nameof(metadata));
+            if (metadata == null)
+            {
+                throw new ArgumentNullException(nameof(metadata));
+            }
 
             foreach (var m in metadata)
             {
