@@ -298,18 +298,18 @@ namespace Autofac.Integration.Mef
             registry.Register(rb.CreateRegistration());
         }
 
-        private static IEnumerable<ServiceRegistration> ComponentsForContract(this IComponentContext context, ContractBasedImportDefinition cbid, ContractBasedService contractService)
+        private static IEnumerable<ServiceRegistration> ComponentsForContract(this IComponentContext context, ContractBasedImportDefinition definition, ContractBasedService contractService)
         {
             var componentsForContract = context
                 .ComponentRegistry
                 .ServiceRegistrationsFor(contractService)
                 .Where(cpt =>
-                    !cbid.RequiredMetadata
+                    !definition.RequiredMetadata
                         .Except(cpt.Metadata.Select(m => new KeyValuePair<string, Type>(m.Key, m.Value.GetType())))
                         .Any())
                 .ToList();
 
-            if (cbid.Cardinality == ImportCardinality.ExactlyOne && componentsForContract.Count == 0)
+            if (definition.Cardinality == ImportCardinality.ExactlyOne && componentsForContract.Count == 0)
             {
                 throw new ComponentNotRegisteredException(contractService);
             }
@@ -411,23 +411,23 @@ namespace Autofac.Integration.Mef
 
             if (additionalServices.Length > 0)
             {
-                var addlReg = builder.Register(c => ((Export)c.ResolveService(exportId)).Value)
+                var additionalRegistration = builder.Register(c => ((Export)c.ResolveService(exportId)).Value)
                             .As(additionalServices)
                             .ExternallyOwned()
                             .WithMetadata(exportDef.Metadata);
 
                 if (exportIsShared)
                 {
-                    addlReg.SingleInstance();
+                    additionalRegistration.SingleInstance();
                 }
             }
         }
 
-        private static IEnumerable<Export> ResolveExports(this IComponentContext context, ContractBasedImportDefinition cbid)
+        private static IEnumerable<Export> ResolveExports(this IComponentContext context, ContractBasedImportDefinition definition)
         {
-            var contractService = new ContractBasedService(cbid.ContractName, cbid.RequiredTypeIdentity);
+            var contractService = new ContractBasedService(definition.ContractName, definition.RequiredTypeIdentity);
 
-            var componentsForContract = context.ComponentsForContract(cbid, contractService);
+            var componentsForContract = context.ComponentsForContract(definition, contractService);
 
             var exportsForContract = componentsForContract
                 .Select(cpt => context.ResolveComponent(new ResolveRequest(contractService, cpt, Enumerable.Empty<Parameter>())))
@@ -443,12 +443,12 @@ namespace Autofac.Integration.Mef
                 .ImportDefinitions
                 .Where(id => id.IsPrerequisite == prerequisite))
             {
-                if (!(import is ContractBasedImportDefinition cbid))
+                if (!(import is ContractBasedImportDefinition definition))
                 {
                     throw new NotSupportedException(string.Format(CultureInfo.CurrentCulture, RegistrationExtensionsResources.ContractBasedOnly, import));
                 }
 
-                var exportsForContract = context.ResolveExports(cbid);
+                var exportsForContract = context.ResolveExports(definition);
                 composablePart.SetImport(import, exportsForContract);
             }
         }
