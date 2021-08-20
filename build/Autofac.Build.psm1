@@ -1,15 +1,15 @@
-# EXIT CODES
+﻿# EXIT CODES
 # 1: dotnet packaging failure
 # 2: dotnet publishing failure
 # 3: Unit test failure
 # 4: dotnet / NuGet package restore failure
 
 <#
-.SYNOPSIS
-    Gets the set of directories in which projects are available for compile/processing.
+ .SYNOPSIS
+  Gets the set of directories in which projects are available for compile/processing.
 
-.PARAMETER RootPath
-    Path where searching for project directories should begin.
+ .PARAMETER RootPath
+  Path where searching for project directories should begin.
 #>
 function Get-DotNetProjectDirectory {
     [CmdletBinding()]
@@ -36,12 +36,24 @@ function Install-DotNetCli {
     )
 
     if ($null -ne (Get-Command "dotnet" -ErrorAction SilentlyContinue)) {
-        $installedVersion = dotnet --version
-        if ($installedVersion -eq $Version) {
-            Write-Message ".NET Core SDK version $Version is already installed"
-            return;
+        $installedVersions = dotnet --list-sdks
+        foreach ($sdkListLine in $installedVersions)
+        {
+            $splitParts = $sdkListLine.Split(" ");
+
+            $versionPart = $splitParts[0];
+            $globalInstallLocation = $splitParts[1].Replace("[", "").Replace("]", "")
+
+            if ($versionPart -eq $Version)
+            {
+                Write-Message ".NET Core SDK version $Version is already installed in $globalInstallLocation"
+                Add-Path "$globalInstallLocation"
+                return;
+            }
         }
     }
+
+    Write-Message "Installing .NET SDK version $Version"
 
     $callerPath = Split-Path $MyInvocation.PSCommandPath
     $installDir = Join-Path -Path $callerPath -ChildPath ".dotnet/cli"
@@ -56,15 +68,43 @@ function Install-DotNetCli {
         }
 
         & ./.dotnet/dotnet-install.ps1 -InstallDir "$installDir" -Version $Version
-        $env:PATH = "$installDir;$env:PATH"
     } else {
         if (!(Test-Path ./.dotnet/dotnet-install.sh)) {
             Invoke-WebRequest "https://dot.net/v1/dotnet-install.sh" -OutFile "./.dotnet/dotnet-install.sh"
         }
 
         & bash ./.dotnet/dotnet-install.sh --install-dir "$installDir" --version $Version
-        $env:PATH = "$installDir`:$env:PATH"
     }
+
+    Add-Path "$installDir"
+}
+
+<#
+.SYNOPSIS
+    Appends a given value to the path but only if the value does not yet exist within the path.
+.PARAMETER Path
+    The path to append.
+#>
+function Add-Path {
+    [CmdletBinding()]
+    Param(
+        [ValidateNotNullOrEmpty()]
+        [string]
+        $Path
+    )
+
+    $pathSeparator = ":";
+
+    if ($IsWindows) {
+        $pathSeparator = ";";
+    }
+
+    $pathValues = $env:PATH.Split($pathSeparator);
+    if ($pathValues -Contains $Path) {
+      return;
+    }
+    
+    $env:PATH = "${Path}${pathSeparator}$env:PATH"
 }
 
 <#
@@ -94,17 +134,17 @@ function Invoke-DotNetBuild {
 }
 
 <#
-.SYNOPSIS
-    Invokes the dotnet utility to package a project.
+ .SYNOPSIS
+  Invokes the dotnet utility to package a project.
 
-.PARAMETER ProjectDirectory
-    Path to the directory containing the project to package.
+ .PARAMETER ProjectDirectory
+  Path to the directory containing the project to package.
 
-.PARAMETER PackagesPath
-    Path to the "artifacts/packages" folder where packages should go.
+ .PARAMETER PackagesPath
+  Path to the "artifacts/packages" folder where packages should go.
 
-.PARAMETER VersionSuffix
-    The version suffix to use for the NuGet package version.
+ .PARAMETER VersionSuffix
+  The version suffix to use for the NuGet package version.
 #>
 function Invoke-DotNetPack {
     [CmdletBinding()]
@@ -175,8 +215,7 @@ function Invoke-Test {
                 --configuration Release `
                 --logger:trx `
                 /p:CollectCoverage=true `
-                /p:CoverletOutput="..\..\" `
-                /p:MergeWith="..\..\coverage.json" `
+                /p:CoverletOutput="../../artifacts/coverage/$($Project.Name)/" `
                 /p:CoverletOutputFormat="json%2clcov" `
                 /p:ExcludeByAttribute=CompilerGeneratedAttribute `
                 /p:ExcludeByAttribute=GeneratedCodeAttribute

@@ -1,0 +1,8 @@
+{
+  "dotnet-test-explorer.testProjectPath": "test/**/*Test.csproj",
+  "omnisharp.enableEditorConfigSupport": true,
+  "omnisharp.enableRoslynAnalyzers": true,
+  "cSpell.words": [
+    "Xunit"
+  ]
+}
