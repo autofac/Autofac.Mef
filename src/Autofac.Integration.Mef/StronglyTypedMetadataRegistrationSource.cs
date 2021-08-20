@@ -30,7 +30,7 @@ namespace Autofac.Integration.Mef
         {
             get
             {
-                return true;
+                return false;
             }
         }
 
