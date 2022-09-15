@@ -60,7 +60,6 @@ namespace Autofac.Integration.Mef.Test
             Assert.True(threwError);
         }
 
-
         [Fact]
         public void InstanceShouldNotBeCreatedAsParameters()
         {
@@ -147,7 +146,6 @@ namespace Autofac.Integration.Mef.Test
 
             public IEnumerable<Lazy<IService, INameMetadata>> Services { get; }
         }
-
 
         [Export]
         internal class SingleServiceConsumer
