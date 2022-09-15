@@ -427,8 +427,8 @@ namespace Autofac.Integration.Mef
             }
         }
 
-        private static Func<object, LazyMemberInfo> GetReflectionMemberImportDefinition;
-        private static Func<object, Lazy<ParameterInfo>> GetReflectionParameterImportDefinition;
+        private static Func<object, LazyMemberInfo> getReflectionMemberImportDefinition;
+        private static Func<object, Lazy<ParameterInfo>> getReflectionParameterImportDefinition;
 
         private static bool TryGetLazyType(this ContractBasedImportDefinition definition, out Type resultType, out Type lazyType)
         {
@@ -441,22 +441,22 @@ namespace Autofac.Integration.Mef
             {
                 case "ReflectionMemberImportDefinition":
                 case "PartCreatorMemberImportDefinition":
-                    if (GetReflectionMemberImportDefinition == null)
+                    if (getReflectionMemberImportDefinition == null)
                     {
                         var def = Expression.Parameter(typeof(object), nameof(definition));
-                        GetReflectionMemberImportDefinition = Expression.Lambda<Func<object, LazyMemberInfo>>(Expression.Property(Expression.Convert(def, definitionType), definitionType.GetProperty("ImportingLazyMember")), def).Compile();
+                        getReflectionMemberImportDefinition = Expression.Lambda<Func<object, LazyMemberInfo>>(Expression.Property(Expression.Convert(def, definitionType), definitionType.GetProperty("ImportingLazyMember")), def).Compile();
                     }
 
-                    lazyMemberInfo = GetReflectionMemberImportDefinition(definition);
+                    lazyMemberInfo = getReflectionMemberImportDefinition(definition);
                     break;
                 case "ReflectionParameterImportDefinition":
-                    if (GetReflectionParameterImportDefinition == null)
+                    if (getReflectionParameterImportDefinition == null)
                     {
                         var def = Expression.Parameter(typeof(object), nameof(definition));
-                        GetReflectionParameterImportDefinition = Expression.Lambda<Func<object, Lazy<ParameterInfo>>>(Expression.Property(Expression.Convert(def, definitionType), definitionType.GetProperty("ImportingLazyParameter")), def).Compile();
+                        getReflectionParameterImportDefinition = Expression.Lambda<Func<object, Lazy<ParameterInfo>>>(Expression.Property(Expression.Convert(def, definitionType), definitionType.GetProperty("ImportingLazyParameter")), def).Compile();
                     }
 
-                    resultType = GetReflectionParameterImportDefinition(definition)?.Value?.ParameterType;
+                    resultType = getReflectionParameterImportDefinition(definition)?.Value?.ParameterType;
                     break;
             }
 
