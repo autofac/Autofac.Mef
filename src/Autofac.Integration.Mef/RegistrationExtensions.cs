@@ -13,6 +13,7 @@ using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Security.Cryptography;
 using Autofac.Builder;
 using Autofac.Core;
 using Autofac.Core.Registration;
@@ -37,6 +38,48 @@ namespace Autofac.Integration.Mef
         /// which holds the dictionary of <see cref="System.Type"/> to <see cref="string"/> contract name mappings.
         /// </summary>
         private static readonly PropertyInfo TypeIdentityCache = ContractNameServices.GetProperty("TypeIdentityCache", BindingFlags.GetProperty | BindingFlags.Static | BindingFlags.NonPublic);
+
+        /// <summary>
+        /// Reference to get a <see cref="LazyMemberInfo"/> from a ReflectionMemberImportDefinition when doing <see cref="Lazy{T, TMetadata}"/> evaluation.
+        /// </summary>
+        private static readonly Lazy<Func<ContractBasedImportDefinition, LazyMemberInfo>> GetReflectionMemberImportDefinition = new Lazy<Func<ContractBasedImportDefinition, LazyMemberInfo>>(BuildGetLazyMemberInfoFromReflectionMemberImportDefinition);
+
+        /// <summary>
+        /// Holds references to get a <see cref="Lazy{ParameterInfo}"/> from a ReflectionParameterImportDefinition when doing <see cref="Lazy{T, TMetadata}"/> evaluation.
+        /// </summary>
+        private static readonly Lazy<Func<ContractBasedImportDefinition, Lazy<ParameterInfo>>> GetReflectionParameterImportDefinition = new Lazy<Func<ContractBasedImportDefinition, Lazy<ParameterInfo>>>(BuildGetParameterInfoFromImportDefinition);
+
+        private static Func<ContractBasedImportDefinition, Lazy<ParameterInfo>> BuildGetParameterInfoFromImportDefinition()
+        {
+            var memberImportType = typeof(ContractBasedImportDefinition).Assembly.GetType("System.ComponentModel.Composition.ReflectionModel.ReflectionParameterImportDefinition");
+            var def = Expression.Parameter(typeof(ContractBasedImportDefinition), "definition");
+            return Expression.Lambda<Func<ContractBasedImportDefinition, Lazy<ParameterInfo>>>(Expression.Property(Expression.Convert(def, memberImportType), memberImportType.GetProperty("ImportingLazyParameter")), def).Compile();
+        }
+
+        private static Func<ContractBasedImportDefinition, LazyMemberInfo> BuildGetLazyMemberInfoFromReflectionMemberImportDefinition()
+        {
+            var memberImportType = typeof(ContractBasedImportDefinition).Assembly.GetType("System.ComponentModel.Composition.ReflectionModel.ReflectionMemberImportDefinition");
+            var def = Expression.Parameter(typeof(ContractBasedImportDefinition), "definition");
+            return Expression.Lambda<Func<ContractBasedImportDefinition, LazyMemberInfo>>(Expression.Property(Expression.Convert(def, memberImportType), memberImportType.GetProperty("ImportingLazyMember")), def).Compile();
+        }
+
+        /// <summary>
+        /// Gets the <see cref="LazyMemberInfo"/> from <paramref name="definition"/>.
+        /// </summary>
+        /// <param name="definition">The definition being resolved.</param>
+        private static LazyMemberInfo GetLazyMemberInfoFromReflectionMemberImportDefinition(this ContractBasedImportDefinition definition)
+        {
+            return GetReflectionMemberImportDefinition.Value(definition);
+        }
+
+        /// <summary>
+        /// Gets the <see cref="Lazy{ParameterInfo}"/> from <paramref name="definition"/>.
+        /// </summary>
+        /// <param name="definition">The definition being resolved.</param>
+        private static Lazy<ParameterInfo> GetParameterInfoFromReflectionParameterImportDefinition(this ContractBasedImportDefinition definition)
+        {
+            return GetReflectionParameterImportDefinition.Value(definition);
+        }
 
         /// <summary>
         /// Expose the registered service to MEF parts as an export.
@@ -427,9 +470,6 @@ namespace Autofac.Integration.Mef
             }
         }
 
-        private static Func<object, LazyMemberInfo> getReflectionMemberImportDefinition;
-        private static Func<object, Lazy<ParameterInfo>> getReflectionParameterImportDefinition;
-
         private static bool TryGetLazyType(this ContractBasedImportDefinition definition, out Type resultType, out Type lazyType)
         {
             // There are a couple of classes that are internal that provide us some information we can use to
@@ -437,27 +477,20 @@ namespace Autofac.Integration.Mef
             var definitionType = definition.GetType();
             LazyMemberInfo? lazyMemberInfo = null;
             resultType = null;
+            lazyType = null;
             switch (definitionType.Name)
             {
+                // The first case is the base class of the second case for both of these pairs.
                 case "ReflectionMemberImportDefinition":
                 case "PartCreatorMemberImportDefinition":
-                    if (getReflectionMemberImportDefinition == null)
-                    {
-                        var def = Expression.Parameter(typeof(object), nameof(definition));
-                        getReflectionMemberImportDefinition = Expression.Lambda<Func<object, LazyMemberInfo>>(Expression.Property(Expression.Convert(def, definitionType), definitionType.GetProperty("ImportingLazyMember")), def).Compile();
-                    }
-
-                    lazyMemberInfo = getReflectionMemberImportDefinition(definition);
+                    lazyMemberInfo = definition.GetLazyMemberInfoFromReflectionMemberImportDefinition();
                     break;
                 case "ReflectionParameterImportDefinition":
-                    if (getReflectionParameterImportDefinition == null)
-                    {
-                        var def = Expression.Parameter(typeof(object), nameof(definition));
-                        getReflectionParameterImportDefinition = Expression.Lambda<Func<object, Lazy<ParameterInfo>>>(Expression.Property(Expression.Convert(def, definitionType), definitionType.GetProperty("ImportingLazyParameter")), def).Compile();
-                    }
-
-                    resultType = getReflectionParameterImportDefinition(definition)?.Value?.ParameterType;
+                case "PartCreatorParameterImportDefinition":
+                    resultType = definition.GetParameterInfoFromReflectionParameterImportDefinition()?.Value?.ParameterType;
                     break;
+                default:
+                    return false;
             }
 
             if (lazyMemberInfo.HasValue)
@@ -467,17 +500,17 @@ namespace Autofac.Integration.Mef
                     if (accessor is MethodInfo methodInfo)
                     {
                         // This is either a getter or a setter.
-                        resultType = m.ReturnType;
+                        resultType = methodInfo.ReturnType;
                         if (resultType == typeof(void))
                         {
-                            resultType = m.GetParameters()[0].ParameterType;
+                            resultType = methodInfo.GetParameters()[0].ParameterType;
                         }
 
                         break;
                     }
                     else if (accessor is FieldInfo fieldInfo)
                     {
-                        resultType = f.FieldType;
+                        resultType = fieldInfo.FieldType;
                         break;
                     }
                 }
@@ -534,11 +567,11 @@ namespace Autofac.Integration.Mef
             {
                 if (context.TryResolve(resultType, out var resolved))
                 {
-                    var valueProperty = lazyType.GetProperty(nameof(Lazy<int, int>.Value));
-                    var metaProperty = lazyType.GetProperty(nameof(Lazy<int, int>.Metadata));
+                    var valueProperty = lazyType.GetProperty("Value");
+                    var metaProperty = lazyType.GetProperty("Metadata");
                     if (resolved is IEnumerable enumerable)
                     {
-                        return a
+                        return enumerable
                             .Cast<object>()
                             .Select(
                                 r => new Export(
