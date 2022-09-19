@@ -433,7 +433,7 @@ namespace Autofac.Integration.Mef
         private static bool TryGetLazyType(this ContractBasedImportDefinition definition, out Type resultType, out Type lazyType)
         {
             // There are a couple of classes that are internal that provide us some information we can use to
-            // properlay guage if we need to do our lazy activation or not.
+            // properly gauge if we need to do our lazy activation or not.
             var definitionType = definition.GetType();
             LazyMemberInfo? lazyMemberInfo = null;
             resultType = null;
@@ -462,9 +462,9 @@ namespace Autofac.Integration.Mef
 
             if (lazyMemberInfo.HasValue)
             {
-                foreach (var v in lazyMemberInfo.Value.GetAccessors())
+                foreach (var accessor in lazyMemberInfo.Value.GetAccessors())
                 {
-                    if (v is MethodInfo m)
+                    if (accessor is MethodInfo methodInfo)
                     {
                         // This is either a getter or a setter.
                         resultType = m.ReturnType;
@@ -475,7 +475,7 @@ namespace Autofac.Integration.Mef
 
                         break;
                     }
-                    else if (v is FieldInfo f)
+                    else if (accessor is FieldInfo fieldInfo)
                     {
                         resultType = f.FieldType;
                         break;
@@ -536,7 +536,7 @@ namespace Autofac.Integration.Mef
                 {
                     var valueProperty = lazyType.GetProperty(nameof(Lazy<int, int>.Value));
                     var metaProperty = lazyType.GetProperty(nameof(Lazy<int, int>.Metadata));
-                    if (resolved is IEnumerable a)
+                    if (resolved is IEnumerable enumerable)
                     {
                         return a
                             .Cast<object>()
