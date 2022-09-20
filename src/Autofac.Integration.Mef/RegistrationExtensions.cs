@@ -519,34 +519,31 @@ namespace Autofac.Integration.Mef
 
         private static IEnumerable<Export> ResolveExports(this IComponentContext context, ContractBasedImportDefinition definition)
         {
-            var contractService = new ContractBasedService(definition.ContractName, definition.RequiredTypeIdentity);
-
-            if (definition.TryGetLazyType(out var resultType, out var lazyType))
+            if (definition.TryGetLazyType(out var resultType, out var lazyType) && context.TryResolve(resultType, out var resolved))
             {
-                if (context.TryResolve(resultType, out var resolved))
+                var valueProperty = lazyType.GetProperty("Value");
+                var metaProperty = lazyType.GetProperty("Metadata");
+                if (resolved is IEnumerable enumerable)
                 {
-                    var valueProperty = lazyType.GetProperty("Value");
-                    var metaProperty = lazyType.GetProperty("Metadata");
-                    if (resolved is IEnumerable enumerable)
-                    {
-                        return enumerable
-                            .Cast<object>()
-                            .Select(
-                                r => new Export(
-                                    definition.ContractName,
-                                    metaProperty.GetValue(r) as IDictionary<string, object>,
-                                    () => valueProperty.GetValue(r)));
-                    }
-
-                    return new Export[]
-                    {
-                            new Export(
+                    return enumerable
+                        .Cast<object>()
+                        .Select(
+                            r => new Export(
                                 definition.ContractName,
-                                metaProperty.GetValue(resolved) as IDictionary<string, object>,
-                                () => valueProperty.GetValue(resolved))
-                    };
+                                metaProperty.GetValue(r) as IDictionary<string, object>,
+                                () => valueProperty.GetValue(r)));
                 }
+
+                return new Export[]
+                {
+                        new Export(
+                            definition.ContractName,
+                            metaProperty.GetValue(resolved) as IDictionary<string, object>,
+                            () => valueProperty.GetValue(resolved))
+                };
             }
+
+            var contractService = new ContractBasedService(definition.ContractName, definition.RequiredTypeIdentity);
 
             var componentsForContract = context.ComponentsForContract(definition, contractService);
 
