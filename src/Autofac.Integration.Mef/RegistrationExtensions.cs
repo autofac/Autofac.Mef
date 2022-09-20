@@ -481,19 +481,19 @@ namespace Autofac.Integration.Mef
                 // Multiple cardinality = IEnumerable<Lazy<T, TMetadata>>
                 bool isLazy;
                 if (
-                    (isLazy = resultType.IsGenericTypeDefinedBy(typeof(Lazy<,>)))
-                        ||
-                    (
-                    resultType.IsGenericTypeDefinedBy(typeof(IEnumerable<>))
-                        &&
-                    resultType.GetGenericArguments()[0].IsGenericTypeDefinedBy(typeof(Lazy<,>))))
+                     (isLazy = resultType.IsGenericTypeDefinedBy(typeof(Lazy<,>)))
+                       ||
+                     (
+                       resultType.IsGenericTypeDefinedBy(typeof(IEnumerable<>))
+                         &&
+                       resultType.GetGenericArguments()[0].IsGenericTypeDefinedBy(typeof(Lazy<,>))))
                 {
                     lazyType = isLazy ? resultType : resultType.GetGenericArguments()[0];
                     var objectType = lazyType.GetGenericArguments()[0];
 
                     // Resolve as Lazy<T, IDictionary<string, object>> so we can leverage the Metadata value to populate
                     // the metadata on the Exports built later.
-                    // If we do not change the type here, we end up loosing the name/value pairs so the resulting
+                    // If we do not change the type here, we end up losing the name/value pairs so the resulting
                     // Metadata will not be populated
                     lazyType = lazyType
                         .GetGenericTypeDefinition()
