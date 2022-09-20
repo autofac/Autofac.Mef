@@ -2,18 +2,23 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Composition.Primitives;
+using System.ComponentModel.Composition.ReflectionModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
+using System.Security.Cryptography;
 using Autofac.Builder;
 using Autofac.Core;
 using Autofac.Core.Registration;
 using Autofac.Core.Resolving.Pipeline;
+using Autofac.Integration.Mef.Util;
 
 namespace Autofac.Integration.Mef
 {
@@ -423,8 +428,121 @@ namespace Autofac.Integration.Mef
             }
         }
 
+        private static bool TryGetLazyType(this ContractBasedImportDefinition definition, out Type resultType, out Type lazyType)
+        {
+            // There are a couple of classes that are internal that provide us some information we can use to
+            // properly gauge if we need to do our lazy activation or not.
+            var definitionType = definition.GetType();
+            LazyMemberInfo? lazyMemberInfo = null;
+            resultType = null;
+            lazyType = null;
+            switch (definitionType.Name)
+            {
+                // The first case is the base class of the second case for both of these pairs.
+                case "ReflectionMemberImportDefinition":
+                case "PartCreatorMemberImportDefinition":
+                    lazyMemberInfo = ReflectionModelServices.GetImportingMember(definition);
+                    break;
+                case "ReflectionParameterImportDefinition":
+                case "PartCreatorParameterImportDefinition":
+                    resultType = ReflectionModelServices.GetImportingParameter(definition)?.Value?.ParameterType;
+                    break;
+                default:
+                    return false;
+            }
+
+            if (lazyMemberInfo.HasValue)
+            {
+                foreach (var accessor in lazyMemberInfo.Value.GetAccessors())
+                {
+                    if (accessor is MethodInfo methodInfo)
+                    {
+                        // This is either a getter or a setter.
+                        resultType = methodInfo.ReturnType;
+                        if (resultType == typeof(void))
+                        {
+                            resultType = methodInfo.GetParameters()[0].ParameterType;
+                        }
+
+                        break;
+                    }
+                    else if (accessor is FieldInfo fieldInfo)
+                    {
+                        resultType = fieldInfo.FieldType;
+                        break;
+                    }
+                }
+            }
+
+            if (resultType != null)
+            {
+                // Have to handle 2 cases
+                // Single cardinality = Lazy<T, TMetadata>
+                // Multiple cardinality = IEnumerable<Lazy<T, TMetadata>>
+                bool isLazy;
+                if (
+                     (isLazy = resultType.IsGenericTypeDefinedBy(typeof(Lazy<,>)))
+                       ||
+                     (
+                       resultType.IsGenericTypeDefinedBy(typeof(IEnumerable<>))
+                         &&
+                       resultType.GetGenericArguments()[0].IsGenericTypeDefinedBy(typeof(Lazy<,>))))
+                {
+                    lazyType = isLazy ? resultType : resultType.GetGenericArguments()[0];
+                    var objectType = lazyType.GetGenericArguments()[0];
+
+                    // Resolve as Lazy<T, IDictionary<string, object>> so we can leverage the Metadata value to populate
+                    // the metadata on the Exports built later.
+                    // If we do not change the type here, we end up losing the name/value pairs so the resulting
+                    // Metadata will not be populated
+                    lazyType = lazyType
+                        .GetGenericTypeDefinition()
+                        .MakeGenericType(objectType, typeof(IDictionary<string, object>));
+
+                    if (!isLazy)
+                    {
+                        resultType = typeof(IEnumerable<>).MakeGenericType(lazyType);
+                    }
+                    else
+                    {
+                        resultType = lazyType;
+                    }
+
+                    return true;
+                }
+            }
+
+            resultType = null;
+            lazyType = null;
+            return false;
+        }
+
         private static IEnumerable<Export> ResolveExports(this IComponentContext context, ContractBasedImportDefinition definition)
         {
+            if (definition.TryGetLazyType(out var resultType, out var lazyType) && context.TryResolve(resultType, out var resolved))
+            {
+                var valueProperty = lazyType.GetProperty("Value");
+                var metaProperty = lazyType.GetProperty("Metadata");
+                if (resolved is IEnumerable enumerable)
+                {
+                    return enumerable
+                        .Cast<object>()
+                        .Select(
+                            r => new Export(
+                                definition.ContractName,
+                                metaProperty.GetValue(r) as IDictionary<string, object>,
+                                () => valueProperty.GetValue(r)));
+                }
+
+                return new Export[]
+                {
+                        new Export(
+                            definition.ContractName,
+                            metaProperty.GetValue(resolved) as IDictionary<string, object>,
+                            () => valueProperty.GetValue(resolved))
+                };
+            }
+
             var contractService = new ContractBasedService(definition.ContractName, definition.RequiredTypeIdentity);
 
             var componentsForContract = context.ComponentsForContract(definition, contractService);
