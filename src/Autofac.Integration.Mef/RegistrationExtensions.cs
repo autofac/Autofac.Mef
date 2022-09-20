@@ -474,7 +474,7 @@ namespace Autofac.Integration.Mef
                 }
             }
 
-            if (resultType != null && resultType != typeof(void))
+            if (resultType != null)
             {
                 // Have to handle 2 cases
                 // Single cardinality = Lazy<T, TMetadata>
