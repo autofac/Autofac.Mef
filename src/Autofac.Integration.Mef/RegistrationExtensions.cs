@@ -539,7 +539,7 @@ namespace Autofac.Integration.Mef
                         new Export(
                             definition.ContractName,
                             metaProperty.GetValue(resolved) as IDictionary<string, object>,
-                            () => valueProperty.GetValue(resolved))
+                            () => valueProperty.GetValue(resolved)),
                 };
             }
 
