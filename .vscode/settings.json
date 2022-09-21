@@ -3,6 +3,12 @@
     "autofac",
     "browsable",
     "cref",
+    "inheritdoc",
+    "langword",
+    "paramref",
+    "resx",
+    "typeparam",
+    "typeparamref",
     "xunit"
   ],
   "dotnet-test-explorer.testProjectPath": "test/**/*Test.csproj",
