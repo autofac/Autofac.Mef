@@ -20,7 +20,7 @@ namespace Autofac.Integration.Mef.Test
         {
             var containerBuilder = new ContainerBuilder();
 
-            var newAssemblyCatalog = new AssemblyCatalog(Assembly.GetExecutingAssembly());
+            using var newAssemblyCatalog = new AssemblyCatalog(Assembly.GetExecutingAssembly());
             containerBuilder.RegisterComposablePartCatalog(newAssemblyCatalog);
             containerBuilder.RegisterType<RegisteredInAutofac>();
             containerBuilder.RegisterType<RegisteredInAutofacAndExported>()
@@ -86,21 +86,24 @@ namespace Autofac.Integration.Mef.Test
             }
         }
 
-        public interface IDependency
+        private interface IDependency
         {
         }
 
+        [SuppressMessage("CA1812", "CA1812", Justification = "Instantiated by dependency injection.")]
         [Meta(1)]
-        public class Dependency1 : IDependency
+        private class Dependency1 : IDependency
         {
         }
 
+        [SuppressMessage("CA1812", "CA1812", Justification = "Instantiated by dependency injection.")]
         [Meta(2)]
-        public class Dependency2 : IDependency
+        private class Dependency2 : IDependency
         {
         }
 
-        public class RegisteredInAutofac
+        [SuppressMessage("CA1812", "CA1812", Justification = "Instantiated by dependency injection.")]
+        private class RegisteredInAutofac
         {
             public ExportedToMefAndImportingFromAutofac ImportedFormMef { get; set; }
 
@@ -112,13 +115,14 @@ namespace Autofac.Integration.Mef.Test
 
         [Export]
         [PartCreationPolicy(CreationPolicy.NonShared)]
-        public class ExportedToMefAndImportingFromAutofac
+        private class ExportedToMefAndImportingFromAutofac
         {
             [Import]
             public RegisteredInAutofacAndExported ImportedFormAutofac { get; set; }
         }
 
-        public class RegisteredInAutofacAndExported
+        [SuppressMessage("CA1812", "CA1812", Justification = "Instantiated by dependency injection.")]
+        private class RegisteredInAutofacAndExported
         {
         }
     }

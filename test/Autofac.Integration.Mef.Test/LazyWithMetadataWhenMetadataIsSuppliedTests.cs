@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Linq;
+using System.Reflection;
+using Autofac.Core;
 using Autofac.Integration.Mef.Test.TestTypes;
 using Xunit;
 
@@ -23,11 +25,12 @@ namespace Autofac.Integration.Mef.Test
             builder.RegisterMetadataRegistrationSources();
             builder.RegisterType<object>().WithMetadata("TheInt", SuppliedValue);
 
-            var catalog = new TypeCatalog(typeof(ThrowingService), typeof(ServiceConsumer), typeof(NotThrowingService), typeof(SingleServiceConsumer), typeof(ServiceConsumerFromParameters));
+            using var catalog = new TypeCatalog(typeof(ThrowingService), typeof(ServiceConsumer), typeof(NotThrowingService), typeof(SingleServiceConsumer), typeof(ServiceConsumerFromParameters));
             builder.RegisterComposablePartCatalog(catalog);
             _container = builder.Build();
         }
 
+        [SuppressMessage("CA1034", "CA1034", Justification = "Metadata classes must be public for MEF.")]
         public interface INameMetadata
         {
             string Name { get; }
@@ -46,18 +49,8 @@ namespace Autofac.Integration.Mef.Test
             var service = serviceConsumer.Services?.FirstOrDefault(x => x.Metadata.Name == "will-throw-on-ctor");
             Assert.NotNull(service);
             Assert.False(service.IsValueCreated);
-            bool threwError;
-            try
-            {
-                threwError = service.Value == null;
-            }
-            catch (Exception ex)
-            {
-                threwError = true;
-                Assert.Contains("This service should never be created", ex.ToString(), StringComparison.OrdinalIgnoreCase);
-            }
-
-            Assert.True(threwError);
+            var ex = Assert.Throws<TargetInvocationException>(() => { _ = service.Value; });
+            Assert.Contains("This service should never be created", ex.ToString(), StringComparison.OrdinalIgnoreCase);
         }
 
         [Fact]
@@ -69,18 +62,8 @@ namespace Autofac.Integration.Mef.Test
             var service = serviceConsumer.Services?.FirstOrDefault(x => x.Metadata.Name == "will-throw-on-ctor");
             Assert.NotNull(service);
             Assert.False(service.IsValueCreated);
-            bool threwError;
-            try
-            {
-                threwError = service.Value == null;
-            }
-            catch (Exception ex)
-            {
-                threwError = true;
-                Assert.Contains("This service should never be created", ex.ToString(), StringComparison.OrdinalIgnoreCase);
-            }
-
-            Assert.True(threwError);
+            var ex = Assert.Throws<TargetInvocationException>(() => { _ = service.Value; });
+            Assert.Contains("This service should never be created", ex.ToString(), StringComparison.OrdinalIgnoreCase);
         }
 
         [Fact]
@@ -161,7 +144,7 @@ namespace Autofac.Integration.Mef.Test
         {
             public ThrowingService()
             {
-                throw new Exception("This service should never be created");
+                throw new InvalidOperationException("This service should never be created");
             }
         }
 

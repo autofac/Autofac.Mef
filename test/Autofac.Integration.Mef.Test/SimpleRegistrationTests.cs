@@ -16,7 +16,7 @@ namespace Autofac.Integration.Mef.Test
         public void MissingDependencyDetected()
         {
             var builder = new ContainerBuilder();
-            var catalog = new TypeCatalog(typeof(HasMissingDependency));
+            using var catalog = new TypeCatalog(typeof(HasMissingDependency));
             builder.RegisterComposablePartCatalog(catalog);
             var container = builder.Build();
             Assert.Throws<ComponentNotRegisteredException>(() => container.Resolve<HasMissingDependency>());
@@ -26,7 +26,7 @@ namespace Autofac.Integration.Mef.Test
         public void RetrievesExportedInterfaceFromCatalogPart()
         {
             var builder = new ContainerBuilder();
-            var catalog = new TypeCatalog(typeof(MefDependency));
+            using var catalog = new TypeCatalog(typeof(MefDependency));
             builder.RegisterComposablePartCatalog(catalog);
             var container = builder.Build();
             var foo = container.Resolve<IDependency>();
@@ -37,7 +37,7 @@ namespace Autofac.Integration.Mef.Test
         public void SatisfiesImportOnMefComponentFromAutofac()
         {
             var builder = new ContainerBuilder();
-            var catalog = new TypeCatalog(typeof(ImportsMefDependency));
+            using var catalog = new TypeCatalog(typeof(ImportsMefDependency));
             builder.RegisterComposablePartCatalog(catalog);
             builder.RegisterType<MefDependency>().Exported(e => e.As<IDependency>());
             var container = builder.Build();
@@ -49,7 +49,7 @@ namespace Autofac.Integration.Mef.Test
         public void SatisfiesImportOnMefComponentFromMef()
         {
             var builder = new ContainerBuilder();
-            var catalog = new TypeCatalog(typeof(MefDependency), typeof(ImportsMefDependency));
+            using var catalog = new TypeCatalog(typeof(MefDependency), typeof(ImportsMefDependency));
             builder.RegisterComposablePartCatalog(catalog);
             var container = builder.Build();
             var bar = container.Resolve<ImportsMefDependency>();
@@ -60,7 +60,7 @@ namespace Autofac.Integration.Mef.Test
         public void ResolvesExportsFromContext()
         {
             var builder = new ContainerBuilder();
-            var catalog = new TypeCatalog(typeof(MefDependency));
+            using var catalog = new TypeCatalog(typeof(MefDependency));
             builder.RegisterComposablePartCatalog(catalog);
             builder.RegisterType<MefDependency>().Exported(e => e.As<IDependency>());
             var container = builder.Build();
@@ -84,7 +84,7 @@ namespace Autofac.Integration.Mef.Test
         public void ObjectExportsSupportedByName()
         {
             var builder = new ContainerBuilder();
-            var catalog = new TypeCatalog(typeof(ObjectExportDerivedClass), typeof(ObjectExportImporter));
+            using var catalog = new TypeCatalog(typeof(ObjectExportDerivedClass), typeof(ObjectExportImporter));
             builder.RegisterComposablePartCatalog(catalog);
             var container = builder.Build();
             var importer = container.Resolve<ObjectExportImporter>();
@@ -95,7 +95,7 @@ namespace Autofac.Integration.Mef.Test
         public void DuplicateConstructorDependency()
         {
             var builder = new ContainerBuilder();
-            var catalog = new TypeCatalog(typeof(MefDependency), typeof(ImportsMefDependency));
+            using var catalog = new TypeCatalog(typeof(MefDependency), typeof(ImportsMefDependency));
             builder.RegisterType<ImportsDuplicateMefClass>();
             builder.RegisterComposablePartCatalog(catalog);
             var container = builder.Build();
@@ -104,17 +104,17 @@ namespace Autofac.Integration.Mef.Test
             Assert.NotNull(resolved.Second);
         }
 
-        public interface IDependency
+        private interface IDependency
         {
         }
 
         [Export(typeof(IDependency))]
-        public class MefDependency : IDependency
+        private class MefDependency : IDependency
         {
         }
 
         [Export]
-        public class ImportsMefDependency
+        private class ImportsMefDependency
         {
             [ImportingConstructor]
             public ImportsMefDependency(IDependency dependency)
@@ -126,29 +126,30 @@ namespace Autofac.Integration.Mef.Test
         }
 
         [Export]
-        public class HasMissingDependency
+        private class HasMissingDependency
         {
             [Import]
             public string Dependency { get; set; }
         }
 
-        public class ObjectExportBaseClass
+        private class ObjectExportBaseClass
         {
         }
 
         [Export("contract-name", typeof(object))]
-        public class ObjectExportDerivedClass : ObjectExportBaseClass
+        private class ObjectExportDerivedClass : ObjectExportBaseClass
         {
         }
 
         [Export]
-        public class ObjectExportImporter
+        private class ObjectExportImporter
         {
             [Import("contract-name")]
             public object Item { get; set; }
         }
 
-        public class ImportsDuplicateMefClass
+        [SuppressMessage("CA1812", "CA1812", Justification = "Instantiated by dependency injection.")]
+        private class ImportsDuplicateMefClass
         {
             public ImportsMefDependency First { get; set; }
 

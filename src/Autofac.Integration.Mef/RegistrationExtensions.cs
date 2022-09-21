@@ -298,7 +298,7 @@ namespace Autofac.Integration.Mef
                 })
                 .As(contractService)
                 .ExternallyOwned()
-                .WithMetadata((IEnumerable<KeyValuePair<string, object>>)exportConfiguration.Metadata);
+                .WithMetadata(exportConfiguration.Metadata);
 
             registry.Register(rb.CreateRegistration());
         }
@@ -310,7 +310,7 @@ namespace Autofac.Integration.Mef
                 .ServiceRegistrationsFor(contractService)
                 .Where(cpt =>
                     !definition.RequiredMetadata
-                        .Except(cpt.Metadata.Select(m => new KeyValuePair<string, Type>(m.Key, m.Value.GetType())))
+                        .Except(cpt.Metadata.Select(m => new KeyValuePair<string, Type>(m.Key, m.Value!.GetType())))
                         .Any())
                 .ToList();
 
@@ -332,7 +332,7 @@ namespace Autofac.Integration.Mef
 
         private static IEnumerable<Service> DefaultExposedServicesMapper(ExportDefinition ed)
         {
-            if (TryMapService(ed, out Service service))
+            if (TryMapService(ed, out Service? service))
             {
                 yield return service;
             }
@@ -428,7 +428,7 @@ namespace Autofac.Integration.Mef
             }
         }
 
-        private static bool TryGetLazyType(this ContractBasedImportDefinition definition, out Type resultType, out Type lazyType)
+        private static bool TryGetLazyType(this ContractBasedImportDefinition definition, [NotNullWhen(true)] out Type? resultType, [NotNullWhen(true)] out Type? lazyType)
         {
             // There are a couple of classes that are internal that provide us some information we can use to
             // properly gauge if we need to do our lazy activation or not.
@@ -582,7 +582,7 @@ namespace Autofac.Integration.Mef
             SetImports(context, composablePart, true);
         }
 
-        private static bool TryMapService(ExportDefinition ed, out Service service)
+        private static bool TryMapService(ExportDefinition ed, [NotNullWhen(true)] out Service? service)
         {
             /* Issue 326: MEF is string based, not type-based, so when an export and
              * an import line up on contract (or type identity) it's always based on a

@@ -67,8 +67,7 @@ namespace Autofac.Integration.Mef
         /// <returns>
         /// true if the specified <see cref="object"/> is equal to the current <see cref="object"/>; otherwise, false.
         /// </returns>
-        /// <exception cref="NullReferenceException">The <paramref name="obj"/> parameter is null.</exception>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             var that = obj as ContractBasedService;
 

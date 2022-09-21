@@ -34,7 +34,7 @@ namespace Autofac.Integration.Mef.Test
         private static IContainer RegisterTypeCatalogContaining(params Type[] types)
         {
             var builder = new ContainerBuilder();
-            var catalog = new TypeCatalog(types);
+            using var catalog = new TypeCatalog(types);
             builder.RegisterComposablePartCatalog(catalog);
             var container = builder.Build();
             return container;
@@ -63,7 +63,7 @@ namespace Autofac.Integration.Mef.Test
         }
 
         [Export]
-        public class LazyCircularA
+        private class LazyCircularA
         {
             [ImportingConstructor]
             public LazyCircularA(Lazy<LazyCircularB> b)
@@ -75,7 +75,7 @@ namespace Autofac.Integration.Mef.Test
         }
 
         [Export]
-        public class LazyCircularB
+        private class LazyCircularB
         {
             [Import]
             public Lazy<LazyCircularA> A { get; set; }
@@ -86,14 +86,14 @@ namespace Autofac.Integration.Mef.Test
          * exception. */
 
         [Export]
-        public class EagerCircularA
+        private class EagerCircularA
         {
             [Import]
             public EagerCircularB B { get; private set; }
         }
 
         [Export]
-        public class EagerCircularB
+        private class EagerCircularB
         {
             [Import]
             public EagerCircularA A { get; set; }

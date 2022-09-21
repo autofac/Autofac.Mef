@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Linq;
@@ -75,7 +76,7 @@ namespace Autofac.Integration.Mef.Test
         public void ExcludesExportsWithoutRequiredMetadata()
         {
             var builder = new ContainerBuilder();
-            var catalog = new TypeCatalog(typeof(RequiresMetadataAllowsDefault), typeof(HasNoMetadata));
+            using var catalog = new TypeCatalog(typeof(RequiresMetadataAllowsDefault), typeof(HasNoMetadata));
             builder.RegisterComposablePartCatalog(catalog);
             var container = builder.Build();
             var rm = container.Resolve<RequiresMetadataAllowsDefault>();
@@ -87,7 +88,7 @@ namespace Autofac.Integration.Mef.Test
         {
             var builder = new ContainerBuilder();
             builder.RegisterMetadataRegistrationSources();
-            var catalog = new TypeCatalog(typeof(RequiresMetadata), typeof(HasMetadata));
+            using var catalog = new TypeCatalog(typeof(RequiresMetadata), typeof(HasMetadata));
             builder.RegisterComposablePartCatalog(catalog);
             var container = builder.Build();
             var rm = container.Resolve<RequiresMetadata>();
@@ -105,7 +106,7 @@ namespace Autofac.Integration.Mef.Test
             };
             const string exportedString = "Hello";
             builder.RegisterInstance(exportedString).Exported(e => e.As<string>().WithMetadata(metadata));
-            var catalog = new TypeCatalog(typeof(RequiresMetadata));
+            using var catalog = new TypeCatalog(typeof(RequiresMetadata));
             builder.RegisterComposablePartCatalog(catalog);
             var container = builder.Build();
             var rm = container.Resolve<RequiresMetadata>();
@@ -117,42 +118,44 @@ namespace Autofac.Integration.Mef.Test
         public void SetsMultipleExportsToZeroOrMoreCardinalityImports()
         {
             var builder = new ContainerBuilder();
-            var catalog = new TypeCatalog(
+            using var catalog = new TypeCatalog(
                 typeof(ImportsMany), typeof(HasMetadata), typeof(HasNoMetadata));
             builder.RegisterComposablePartCatalog(catalog);
             var container = builder.Build();
             var rm = container.Resolve<ImportsMany>();
             Assert.NotNull(rm.Dependencies);
-            Assert.Equal(2, rm.Dependencies.Count());
+            Assert.Equal(2, rm.Dependencies.Count);
         }
 
+        [SuppressMessage("CA1034", "CA1034", Justification = "Metadata classes must be public for MEF.")]
         public interface IRequiredMetadata
         {
             string Key { get; }
         }
 
         [Export]
-        public class RequiresMetadata
+        private class RequiresMetadata
         {
             [Import]
             public Lazy<string, IRequiredMetadata> Dependency { get; set; }
         }
 
         [Export]
-        public class RequiresMetadataAllowsDefault
+        private class RequiresMetadataAllowsDefault
         {
             [Import(AllowDefault = true)]
             public Lazy<string, IRequiredMetadata> Dependency { get; set; }
         }
 
         [Export]
-        public class ImportsMany
+        private class ImportsMany
         {
             [ImportMany]
-            public List<string> Dependencies { get; set; }
+            public Collection<string> Dependencies { get; private set; }
         }
 
-        public class HasNoMetadata
+        [SuppressMessage("CA1812", "CA1812", Justification = "Instantiated by dependency injection.")]
+        private class HasNoMetadata
         {
             [Export]
             public string Service
@@ -164,7 +167,8 @@ namespace Autofac.Integration.Mef.Test
             }
         }
 
-        public class HasMetadata
+        [SuppressMessage("CA1812", "CA1812", Justification = "Instantiated by dependency injection.")]
+        private class HasMetadata
         {
             [Export]
             [ExportMetadata("Key", "Foo")]

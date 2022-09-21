@@ -19,7 +19,7 @@ namespace Autofac.Integration.Mef.Test
         public void ImportManyFromAutofacExports()
         {
             var builder = new ContainerBuilder();
-            var catalog = new TypeCatalog(typeof(ImportManyDependency));
+            using var catalog = new TypeCatalog(typeof(ImportManyDependency));
             builder.RegisterComposablePartCatalog(catalog);
             foreach (Type type in Assembly.GetExecutingAssembly().GetTypes().Where(type =>
                 typeof(IAutofacDependency).IsAssignableFrom(type) && !type.IsInterface))
@@ -36,7 +36,7 @@ namespace Autofac.Integration.Mef.Test
         public void ImportWithMetadataFromAutofacExports()
         {
             var builder = new ContainerBuilder();
-            var catalog = new TypeCatalog(typeof(ImportWithMetadataDependency));
+            using var catalog = new TypeCatalog(typeof(ImportWithMetadataDependency));
             builder.RegisterComposablePartCatalog(catalog);
             const int metaInt = 10;
             foreach (Type type in Assembly.GetExecutingAssembly().GetTypes().Where(type =>
@@ -72,7 +72,7 @@ namespace Autofac.Integration.Mef.Test
         public void DuplicateConstructorDependencyImportUsingAttribute()
         {
             var builder = new ContainerBuilder();
-            var catalog = new TypeCatalog(typeof(ImportsDuplicateAutofacDependency));
+            using var catalog = new TypeCatalog(typeof(ImportsDuplicateAutofacDependency));
             builder.RegisterComposablePartCatalog(catalog);
             foreach (Type type in Assembly.GetExecutingAssembly().GetTypes().Where(type =>
                 Attribute.GetCustomAttribute(type, typeof(ExportFromAutofacAttribute)) != null))
@@ -90,7 +90,7 @@ namespace Autofac.Integration.Mef.Test
         public void DuplicateConstructorDependencyImportUsingInterface()
         {
             var builder = new ContainerBuilder();
-            var catalog = new TypeCatalog(typeof(ImportsDuplicateAutofacDependency));
+            using var catalog = new TypeCatalog(typeof(ImportsDuplicateAutofacDependency));
             builder.RegisterComposablePartCatalog(catalog);
             foreach (Type type in Assembly.GetExecutingAssembly().GetTypes().Where(type =>
                 typeof(IAutofacDependency).IsAssignableFrom(type) && !type.IsInterface))
@@ -108,7 +108,7 @@ namespace Autofac.Integration.Mef.Test
         public void MixedDependencyConstructorDependencyImport()
         {
             var builder = new ContainerBuilder();
-            var catalog = new TypeCatalog(typeof(ImportsMixedAutofacMefDependency), typeof(MefDependency));
+            using var catalog = new TypeCatalog(typeof(ImportsMixedAutofacMefDependency), typeof(MefDependency));
             builder.RegisterComposablePartCatalog(catalog);
             foreach (Type type in Assembly.GetExecutingAssembly().GetTypes().Where(type =>
                 Attribute.GetCustomAttribute(type, typeof(ExportFromAutofacAttribute)) != null))
@@ -122,45 +122,47 @@ namespace Autofac.Integration.Mef.Test
             Assert.NotNull(resolved.Second);
         }
 
-        public interface IAutofacDependency
+        private interface IAutofacDependency
         {
         }
 
+        [SuppressMessage("CA1812", "CA1812", Justification = "Instantiated by dependency injection.")]
         [ExportFromAutofac]
-        public class ExportFromAutofacDependencyA : IAutofacDependency
+        private class ExportFromAutofacDependencyA : IAutofacDependency
         {
         }
 
+        [SuppressMessage("CA1812", "CA1812", Justification = "Instantiated by dependency injection.")]
         [ExportFromAutofac]
-        public class ExportFromAutofacDependencyB : IAutofacDependency
+        private class ExportFromAutofacDependencyB : IAutofacDependency
         {
         }
 
-        public interface IDependency
+        private interface IDependency
         {
         }
 
         [Export(typeof(IDependency))]
-        public class MefDependency : IDependency
+        private class MefDependency : IDependency
         {
         }
 
         [Export]
-        public class ImportManyDependency
+        private class ImportManyDependency
         {
             [ImportMany]
             public IEnumerable<IAutofacDependency> Dependencies { get; set; }
         }
 
         [Export]
-        public class ImportWithMetadataDependency
+        private class ImportWithMetadataDependency
         {
             [Import]
             public Lazy<ExportFromAutofacDependencyB, IMetaWithDefault> Dependency { get; set; }
         }
 
         [Export]
-        public class ImportsDuplicateAutofacDependency
+        private class ImportsDuplicateAutofacDependency
         {
             public ExportFromAutofacDependencyA First { get; }
 
@@ -175,7 +177,7 @@ namespace Autofac.Integration.Mef.Test
         }
 
         [Export]
-        public class ImportsMixedAutofacMefDependency
+        private class ImportsMixedAutofacMefDependency
         {
             public ExportFromAutofacDependencyA First { get; }
 
@@ -190,7 +192,7 @@ namespace Autofac.Integration.Mef.Test
         }
 
         [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
-        public sealed class ExportFromAutofacAttribute : Attribute
+        private sealed class ExportFromAutofacAttribute : Attribute
         {
         }
     }

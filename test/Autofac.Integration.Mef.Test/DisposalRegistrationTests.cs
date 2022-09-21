@@ -15,7 +15,7 @@ namespace Autofac.Integration.Mef.Test
         public void DefaultLifetimeForMefComponentsIsSingleton()
         {
             var builder = new ContainerBuilder();
-            var catalog = new TypeCatalog(typeof(HasDefaultCreationPolicy));
+            using var catalog = new TypeCatalog(typeof(HasDefaultCreationPolicy));
             builder.RegisterComposablePartCatalog(catalog);
             AssertDisposalTrackerIsSingleton(builder);
         }
@@ -24,7 +24,7 @@ namespace Autofac.Integration.Mef.Test
         public void RespectsSharedCreationPolicy()
         {
             var builder = new ContainerBuilder();
-            var catalog = new TypeCatalog(typeof(HasSharedCreationPolicy));
+            using var catalog = new TypeCatalog(typeof(HasSharedCreationPolicy));
             builder.RegisterComposablePartCatalog(catalog);
             AssertDisposalTrackerIsSingleton(builder);
         }
@@ -33,7 +33,7 @@ namespace Autofac.Integration.Mef.Test
         public void AnyCreationPolicyDefaultsToShared()
         {
             var builder = new ContainerBuilder();
-            var catalog = new TypeCatalog(typeof(HasAnyCreationPolicy));
+            using var catalog = new TypeCatalog(typeof(HasAnyCreationPolicy));
             builder.RegisterComposablePartCatalog(catalog);
             AssertDisposalTrackerIsSingleton(builder);
         }
@@ -53,7 +53,7 @@ namespace Autofac.Integration.Mef.Test
         public void RespectsNonSharedCreationPolicy()
         {
             var builder = new ContainerBuilder();
-            var catalog = new TypeCatalog(typeof(HasNonSharedCreationPolicy));
+            using var catalog = new TypeCatalog(typeof(HasNonSharedCreationPolicy));
             builder.RegisterComposablePartCatalog(catalog);
             var container = builder.Build();
             var instance1 = container.Resolve<DisposalTracker>();
@@ -67,7 +67,7 @@ namespace Autofac.Integration.Mef.Test
             Assert.True(instance2.IsDisposedPublic);
         }
 
-        public class DisposalTracker : Disposable
+        private class DisposalTracker : Disposable
         {
             public bool IsDisposedPublic
             {
@@ -79,25 +79,25 @@ namespace Autofac.Integration.Mef.Test
         }
 
         [Export(typeof(DisposalTracker))]
-        public class HasDefaultCreationPolicy : DisposalTracker
+        private class HasDefaultCreationPolicy : DisposalTracker
         {
         }
 
         [PartCreationPolicy(CreationPolicy.Any)]
         [Export(typeof(DisposalTracker))]
-        public class HasAnyCreationPolicy : DisposalTracker
+        private class HasAnyCreationPolicy : DisposalTracker
         {
         }
 
         [PartCreationPolicy(CreationPolicy.Shared)]
         [Export(typeof(DisposalTracker))]
-        public class HasSharedCreationPolicy : DisposalTracker
+        private class HasSharedCreationPolicy : DisposalTracker
         {
         }
 
         [PartCreationPolicy(CreationPolicy.NonShared)]
         [Export(typeof(DisposalTracker))]
-        public class HasNonSharedCreationPolicy : DisposalTracker
+        private class HasNonSharedCreationPolicy : DisposalTracker
         {
         }
     }

@@ -7,9 +7,10 @@ using System.ComponentModel.Composition;
 namespace Autofac.Integration.Mef.Test.TestTypes
 {
     [MetadataAttribute]
-    public class MetaAttribute : Attribute, IMeta
+    [AttributeUsage(AttributeTargets.Class)]
+    public sealed class MetaAttribute : Attribute, IMeta
     {
-        public MetaAttribute(int value) => TheInt = value;
+        public MetaAttribute(int theInt) => TheInt = theInt;
 
         public int TheInt { get; private set; }
     }

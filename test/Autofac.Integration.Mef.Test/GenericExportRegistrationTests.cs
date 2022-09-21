@@ -32,33 +32,35 @@ namespace Autofac.Integration.Mef.Test
         private static IContainer RegisterTypeCatalogContaining(params Type[] types)
         {
             var builder = new ContainerBuilder();
-            var catalog = new TypeCatalog(types);
+            using var catalog = new TypeCatalog(types);
             builder.RegisterComposablePartCatalog(catalog);
             var container = builder.Build();
             return container;
         }
 
         [InheritedExport]
-        public interface ITest<T>
+        private interface ITest<T>
         {
         }
 
-        public interface IT1
+        private interface IT1
         {
         }
 
-        public class Test : ITest<IT1>
+        [SuppressMessage("CA1812", "CA1812", Justification = "Instantiated by dependency injection.")]
+        private class Test : ITest<IT1>
         {
         }
 
-        public class TestConsumer
+        [SuppressMessage("CA1812", "CA1812", Justification = "Instantiated by dependency injection.")]
+        private class TestConsumer
         {
             [Import]
             public ITest<IT1> Property { get; set; }
         }
 
         [Export(typeof(OpenGenericExport<>))]
-        public class OpenGenericExport<T>
+        private class OpenGenericExport<T>
         {
             [ImportingConstructor]
             public OpenGenericExport(T t)
@@ -67,12 +69,12 @@ namespace Autofac.Integration.Mef.Test
         }
 
         [Export]
-        public class SimpleType
+        private class SimpleType
         {
         }
 
         [Export]
-        public class OpenGenericConsumer
+        private class OpenGenericConsumer
         {
             [ImportingConstructor]
             public OpenGenericConsumer(OpenGenericExport<SimpleType> o)

@@ -17,7 +17,7 @@ namespace Autofac.Integration.Mef.Test
         public void ImportsEmptyCollectionIfDependencyMissing()
         {
             var builder = new ContainerBuilder();
-            var catalog = new TypeCatalog(typeof(ImportsMany));
+            using var catalog = new TypeCatalog(typeof(ImportsMany));
             builder.RegisterComposablePartCatalog(catalog);
             var container = builder.Build();
             var im = container.Resolve<ImportsMany>();
@@ -29,7 +29,7 @@ namespace Autofac.Integration.Mef.Test
         public void RespectsExplicitInterchangeServices()
         {
             var builder = new ContainerBuilder();
-            var catalog = new TypeCatalog(typeof(HasMultipleExports));
+            using var catalog = new TypeCatalog(typeof(HasMultipleExports));
 
             var interchangeService1 = new TypedService(typeof(HasMultipleExportsBase));
             var interchangeService2 = new KeyedService("b", typeof(HasMultipleExports));
@@ -49,7 +49,7 @@ namespace Autofac.Integration.Mef.Test
             Assert.False(container.IsRegisteredService(nonInterchangeService2));
         }
 
-        public class HasMultipleExportsBase
+        private class HasMultipleExportsBase
         {
         }
 
@@ -57,12 +57,12 @@ namespace Autofac.Integration.Mef.Test
         [Export("b")]
         [Export(typeof(HasMultipleExportsBase))]
         [Export(typeof(HasMultipleExports))]
-        public class HasMultipleExports : HasMultipleExportsBase
+        private class HasMultipleExports : HasMultipleExportsBase
         {
         }
 
         [Export]
-        public class ImportsMany
+        private class ImportsMany
         {
             [ImportMany]
             public List<string> Dependencies { get; set; }
