@@ -3,10 +3,7 @@
 
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
-using System.Linq;
 using Autofac.Core.Registration;
-using Autofac.Integration.Mef;
-using Xunit;
 
 namespace Autofac.Integration.Mef.Test
 {

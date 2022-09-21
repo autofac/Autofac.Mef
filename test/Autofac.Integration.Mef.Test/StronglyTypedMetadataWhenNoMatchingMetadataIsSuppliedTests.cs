@@ -5,7 +5,6 @@ using System.ComponentModel.Composition;
 using Autofac.Core;
 using Autofac.Features.Metadata;
 using Autofac.Integration.Mef.Test.TestTypes;
-using Xunit;
 
 namespace Autofac.Integration.Mef.Test
 {

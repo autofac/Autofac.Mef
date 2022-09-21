@@ -1,16 +1,11 @@
 ﻿// Copyright (c) Autofac Project. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
-using System.Linq;
 using Autofac.Features.Metadata;
-using Autofac.Integration.Mef;
 using Autofac.Integration.Mef.Test.TestTypes;
-using Xunit;
 
 namespace Autofac.Integration.Mef.Test
 {

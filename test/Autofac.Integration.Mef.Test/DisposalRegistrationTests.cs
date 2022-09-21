@@ -3,9 +3,7 @@
 
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
-using Autofac.Integration.Mef;
 using Autofac.Util;
-using Xunit;
 
 namespace Autofac.Integration.Mef.Test
 {
