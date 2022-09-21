@@ -4,7 +4,7 @@
 namespace Autofac.Integration.Mef.Util;
 
 /// <summary>
-/// Extension methods for working with <see cref="System.Type"/>.
+/// Extension methods for working with <see cref="Type"/>.
 /// </summary>
 internal static class TypeExtensions
 {

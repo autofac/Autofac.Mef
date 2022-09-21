@@ -108,7 +108,7 @@ public class ExportConfigurationBuilder
     /// </summary>
     /// <param name="metadata">Metadata.</param>
     /// <returns>Builder for additional configuration.</returns>
-    /// <exception cref="System.ArgumentNullException">
+    /// <exception cref="ArgumentNullException">
     /// Thrown if <paramref name="metadata" /> is <see langword="null" />.
     /// </exception>
     public ExportConfigurationBuilder WithMetadata(IEnumerable<KeyValuePair<string, object>> metadata)

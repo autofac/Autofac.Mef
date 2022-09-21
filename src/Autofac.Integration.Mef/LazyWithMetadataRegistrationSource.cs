@@ -10,7 +10,7 @@ using Autofac.Integration.Mef.Util;
 namespace Autofac.Integration.Mef;
 
 /// <summary>
-/// Support the <see cref="System.Lazy{T, TMetadata}"/>
+/// Support the <see cref="Lazy{T, TMetadata}"/>
 /// types automatically whenever type T is registered with the container.
 /// </summary>
 /// <remarks>

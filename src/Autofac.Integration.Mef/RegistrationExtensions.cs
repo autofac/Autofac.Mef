@@ -22,14 +22,14 @@ namespace Autofac.Integration.Mef;
 public static class RegistrationExtensions
 {
     /// <summary>
-    /// Reference to the internal <see cref="System.Type"/> for <c>System.ComponentModel.Composition.ContractNameServices</c>,
+    /// Reference to the internal <see cref="Type"/> for <c>System.ComponentModel.Composition.ContractNameServices</c>,
     /// which is responsible for mapping types to MEF contract names.
     /// </summary>
     private static readonly Type ContractNameServices = typeof(ExportAttribute).Assembly.GetType("System.ComponentModel.Composition.ContractNameServices", true);
 
     /// <summary>
     /// Reference to the property <c>System.ComponentModel.Composition.ContractNameServices.TypeIdentityCache</c>,
-    /// which holds the dictionary of <see cref="System.Type"/> to <see cref="string"/> contract name mappings.
+    /// which holds the dictionary of <see cref="Type"/> to <see cref="string"/> contract name mappings.
     /// </summary>
     private static readonly PropertyInfo TypeIdentityCache = ContractNameServices.GetProperty("TypeIdentityCache", BindingFlags.GetProperty | BindingFlags.Static | BindingFlags.NonPublic);
 
