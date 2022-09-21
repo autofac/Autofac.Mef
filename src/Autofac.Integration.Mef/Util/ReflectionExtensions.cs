@@ -49,7 +49,7 @@ internal static class ReflectionExtensions
         }
 
         var mex = propertyAccessor.Body as MemberExpression;
-        if (!(mex?.Member is PropertyInfo))
+        if (mex?.Member is not PropertyInfo)
         {
             throw new ArgumentException(string.Format(
                 CultureInfo.CurrentCulture,

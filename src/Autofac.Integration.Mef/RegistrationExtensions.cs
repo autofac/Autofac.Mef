@@ -548,7 +548,7 @@ public static class RegistrationExtensions
             .ImportDefinitions
             .Where(id => id.IsPrerequisite == prerequisite))
         {
-            if (!(import is ContractBasedImportDefinition definition))
+            if (import is not ContractBasedImportDefinition definition)
             {
                 throw new NotSupportedException(string.Format(CultureInfo.CurrentCulture, RegistrationExtensionsResources.ContractBasedOnly, import));
             }
