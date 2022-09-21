@@ -3,14 +3,13 @@
 
 using System.ComponentModel.Composition;
 
-namespace Autofac.Integration.Mef.Test.TestTypes
-{
-    [MetadataAttribute]
-    [AttributeUsage(AttributeTargets.Class)]
-    public sealed class MetaAttribute : Attribute, IMeta
-    {
-        public MetaAttribute(int theInt) => TheInt = theInt;
+namespace Autofac.Integration.Mef.Test.TestTypes;
 
-        public int TheInt { get; private set; }
-    }
+[MetadataAttribute]
+[AttributeUsage(AttributeTargets.Class)]
+public sealed class MetaAttribute : Attribute, IMeta
+{
+    public MetaAttribute(int theInt) => TheInt = theInt;
+
+    public int TheInt { get; private set; }
 }

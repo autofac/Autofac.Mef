@@ -6,32 +6,31 @@ using Autofac.Core;
 using Autofac.Features.Metadata;
 using Autofac.Integration.Mef.Test.TestTypes;
 
-namespace Autofac.Integration.Mef.Test
+namespace Autofac.Integration.Mef.Test;
+
+public class StronglyTypedMetadataWhenNoMatchingMetadataIsSuppliedTests
 {
-    public class StronglyTypedMetadataWhenNoMatchingMetadataIsSuppliedTests
+    private readonly IContainer _container;
+
+    public StronglyTypedMetadataWhenNoMatchingMetadataIsSuppliedTests()
     {
-        private readonly IContainer _container;
+        var builder = new ContainerBuilder();
+        builder.RegisterMetadataRegistrationSources();
+        builder.RegisterType<object>();
+        _container = builder.Build();
+    }
 
-        public StronglyTypedMetadataWhenNoMatchingMetadataIsSuppliedTests()
-        {
-            var builder = new ContainerBuilder();
-            builder.RegisterMetadataRegistrationSources();
-            builder.RegisterType<object>();
-            _container = builder.Build();
-        }
+    [Fact]
+    public void ResolvingStronglyTypedMetadataWithoutDefaultValueThrowsException()
+    {
+        var dx = Assert.Throws<DependencyResolutionException>(() => _container.Resolve<Meta<object, IMeta>>());
+        Assert.IsType<CompositionContractMismatchException>(dx.InnerException);
+    }
 
-        [Fact]
-        public void ResolvingStronglyTypedMetadataWithoutDefaultValueThrowsException()
-        {
-            var dx = Assert.Throws<DependencyResolutionException>(() => _container.Resolve<Meta<object, IMeta>>());
-            Assert.IsType<CompositionContractMismatchException>(dx.InnerException);
-        }
-
-        [Fact]
-        public void ResolvingStronglyTypedMetadataWithDefaultValueProvidesDefault()
-        {
-            var m = _container.Resolve<Meta<object, IMetaWithDefault>>();
-            Assert.Equal((int)42, (int)m.Metadata.TheInt);
-        }
+    [Fact]
+    public void ResolvingStronglyTypedMetadataWithDefaultValueProvidesDefault()
+    {
+        var m = _container.Resolve<Meta<object, IMetaWithDefault>>();
+        Assert.Equal((int)42, (int)m.Metadata.TheInt);
     }
 }
