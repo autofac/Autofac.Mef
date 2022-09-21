@@ -64,7 +64,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Magic embedded resource incantation based on https://github.com/dotnet/msbuild/issues/4751 -->
+    <!--
+      Magic embedded resource incantation based on https://github.com/dotnet/msbuild/issues/4751
+
+      The EmbeddedResource entry seems to add the Designer files to Compile, so
+      if you don't first remove them from Compile you get warnings about
+      double-including source.
+    -->
+    <Compile Remove="**/*.Designer.cs" />
     <EmbeddedResource Update="ContractBasedServiceResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ContractBasedServiceResources.Designer.cs</LastGenOutput>
