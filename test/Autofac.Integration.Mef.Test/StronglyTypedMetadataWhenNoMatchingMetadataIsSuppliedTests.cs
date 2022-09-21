@@ -31,6 +31,6 @@ public class StronglyTypedMetadataWhenNoMatchingMetadataIsSuppliedTests
     public void ResolvingStronglyTypedMetadataWithDefaultValueProvidesDefault()
     {
         var m = _container.Resolve<Meta<object, IMetaWithDefault>>();
-        Assert.Equal((int)42, (int)m.Metadata.TheInt);
+        Assert.Equal(42, m.Metadata.TheInt);
     }
 }

@@ -24,20 +24,20 @@ public class StronglyTypedMetadataWhenMetadataIsSuppliedTests
     public void ValuesAreProvidedFromMetadata()
     {
         var meta = _container.Resolve<Meta<object, IMeta>>();
-        Assert.Equal((int)SuppliedValue, (int)meta.Metadata.TheInt);
+        Assert.Equal(SuppliedValue, meta.Metadata.TheInt);
     }
 
     [Fact]
     public void ValuesProvidedFromMetadataOverrideDefaults()
     {
         var meta = _container.Resolve<Meta<object, IMetaWithDefault>>();
-        Assert.Equal((int)SuppliedValue, (int)meta.Metadata.TheInt);
+        Assert.Equal(SuppliedValue, meta.Metadata.TheInt);
     }
 
     [Fact]
     public void ValuesBubbleUpThroughAdapters()
     {
         var meta = _container.Resolve<Meta<Func<object>, IMeta>>();
-        Assert.Equal((int)SuppliedValue, (int)meta.Metadata.TheInt);
+        Assert.Equal(SuppliedValue, meta.Metadata.TheInt);
     }
 }
