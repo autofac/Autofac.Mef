@@ -117,7 +117,7 @@ public class LazyWithMetadataWhenMetadataIsSuppliedTests
     internal class ServiceConsumerFromParameters
     {
         [ImportingConstructor]
-        public ServiceConsumerFromParameters([ImportMany]IEnumerable<Lazy<IService, INameMetadata>> services)
+        public ServiceConsumerFromParameters([ImportMany] IEnumerable<Lazy<IService, INameMetadata>> services)
         {
             Services = services;
         }
