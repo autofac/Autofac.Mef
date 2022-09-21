@@ -1,40 +1,51 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Description>Managed Extensibility Framework integration for Autofac. Enables MEF catalogs to be loaded by the Autofac container.</Description>
     <!-- VersionPrefix patched by AppVeyor -->
     <VersionPrefix>0.0.1</VersionPrefix>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
-    <LangVersion>latest</LangVersion>
-    <NoWarn>$(NoWarn);IDE0008</NoWarn>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <!-- Assembly metadata -->
     <AssemblyName>Autofac.Integration.Mef</AssemblyName>
+    <AssemblyTitle>Autofac.Mef</AssemblyTitle>
+    <Description>Managed Extensibility Framework integration for Autofac. Enables MEF catalogs to be loaded by the Autofac container.</Description>
+    <Copyright>Copyright © 2015 Autofac Contributors</Copyright>
+    <Authors>Autofac Contributors</Authors>
+    <Company>Autofac</Company>
+    <Product>Autofac</Product>
     <AssemblyOriginatorKeyFile>../../Autofac.snk</AssemblyOriginatorKeyFile>
     <SignAssembly>true</SignAssembly>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <!-- Frameworks and language features -->
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <CodeAnalysisRuleSet>../../build/Analyzers.ruleset</CodeAnalysisRuleSet>
+    <AnalysisMode>AllEnabledByDefault</AnalysisMode>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Packaging -->
     <PackageId>Autofac.Mef</PackageId>
     <PackageTags>autofac;di;ioc;dependencyinjection;aspnet;aspnetcore</PackageTags>
     <PackageReleaseNotes>Release notes are at https://github.com/autofac/Autofac.Mef/releases</PackageReleaseNotes>
     <PackageIcon>icon.png</PackageIcon>
     <PackageProjectUrl>https://autofac.org</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/autofac/Autofac.Mef</RepositoryUrl>
-    <AssemblyTitle>Autofac.Mef</AssemblyTitle>
-    <NeutralLanguage>en-US</NeutralLanguage>
-    <Copyright>Copyright © 2015 Autofac Contributors</Copyright>
-    <AnalysisMode>AllEnabledByDefault</AnalysisMode>
-    <CodeAnalysisRuleSet>../../build/Analyzers.ruleset</CodeAnalysisRuleSet>
     <ContinuousIntegrationBuild Condition="'$(CI)' != '' ">true</ContinuousIntegrationBuild>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedAllSources>true</EmbedAllSources>
-    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
-    <Authors>Autofac Contributors</Authors>
-    <Company>Autofac</Company>
-    <Product>Autofac</Product>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup>
+    <Using Include="System.Diagnostics.CodeAnalysis" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="..\..\build\icon.png" Pack="true" PackagePath="\" />
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -42,61 +53,58 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Autofac" Version="6.0.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.2">
+    <PackageReference Include="Autofac" Version="6.4.0" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" Condition="Exists('$(MSBuildThisFileDirectory)../../.git')">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="5.0.3">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" Condition="Exists('$(MSBuildThisFileDirectory)../../.git')">
-      <PrivateAssets>All</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.354">
+    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.406">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="System.ComponentModel.Composition" Version="4.5.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="ContractBasedServiceResources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ContractBasedServiceResources.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="LazyWithMetadataRegistrationSourceResources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>LazyWithMetadataRegistrationSourceResources.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="StronglyTypedMetadataRegistrationSourceResources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>StronglyTypedMetadataRegistrationSourceResources.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="RegistrationExtensionsResources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>RegistrationExtensionsResources.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="Util\ReflectionExtensionsResources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>RegistrationExtensionsResources.resx</DependentUpon>
-    </Compile>
+    <!-- Magic embedded resource incantation based on https://github.com/dotnet/msbuild/issues/4751 -->
+    <EmbeddedResource Update="ContractBasedServiceResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ContractBasedServiceResources.Designer.cs</LastGenOutput>
+      <StronglyTypedFileName>ContractBasedServiceResources.Designer.cs</StronglyTypedFileName>
+      <StronglyTypedLanguage>CSharp</StronglyTypedLanguage>
+      <StronglyTypedNamespace>Autofac.Integration.Mef</StronglyTypedNamespace>
+      <StronglyTypedClassName>ContractBasedServiceResources</StronglyTypedClassName>
+    </EmbeddedResource>
+    <EmbeddedResource Update="LazyWithMetadataRegistrationSourceResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>LazyWithMetadataRegistrationSourceResources.Designer.cs</LastGenOutput>
+      <StronglyTypedFileName>LazyWithMetadataRegistrationSourceResources.Designer.cs</StronglyTypedFileName>
+      <StronglyTypedLanguage>CSharp</StronglyTypedLanguage>
+      <StronglyTypedNamespace>Autofac.Integration.Mef</StronglyTypedNamespace>
+      <StronglyTypedClassName>LazyWithMetadataRegistrationSourceResources</StronglyTypedClassName>
+    </EmbeddedResource>
+    <EmbeddedResource Update="StronglyTypedMetadataRegistrationSourceResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>StronglyTypedMetadataRegistrationSourceResources.Designer.cs</LastGenOutput>
+      <StronglyTypedFileName>StronglyTypedMetadataRegistrationSourceResources.Designer.cs</StronglyTypedFileName>
+      <StronglyTypedLanguage>CSharp</StronglyTypedLanguage>
+      <StronglyTypedNamespace>Autofac.Integration.Mef</StronglyTypedNamespace>
+      <StronglyTypedClassName>StronglyTypedMetadataRegistrationSourceResources</StronglyTypedClassName>
+    </EmbeddedResource>
+    <EmbeddedResource Update="RegistrationExtensionsResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>RegistrationExtensionsResources.Designer.cs</LastGenOutput>
+      <StronglyTypedFileName>RegistrationExtensionsResources.Designer.cs</StronglyTypedFileName>
+      <StronglyTypedLanguage>CSharp</StronglyTypedLanguage>
+      <StronglyTypedNamespace>Autofac.Integration.Mef</StronglyTypedNamespace>
+      <StronglyTypedClassName>RegistrationExtensionsResources</StronglyTypedClassName>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Util\ReflectionExtensionsResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ReflectionExtensionsResources.Designer.cs</LastGenOutput>
+      <StronglyTypedFileName>Util\ReflectionExtensionsResources.Designer.cs</StronglyTypedFileName>
+      <StronglyTypedLanguage>CSharp</StronglyTypedLanguage>
+      <StronglyTypedNamespace>Autofac.Integration.Mef.Util</StronglyTypedNamespace>
+      <StronglyTypedClassName>ReflectionExtensionsResources</StronglyTypedClassName>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
