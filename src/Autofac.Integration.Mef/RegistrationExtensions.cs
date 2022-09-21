@@ -493,14 +493,7 @@ public static class RegistrationExtensions
                     .GetGenericTypeDefinition()
                     .MakeGenericType(objectType, typeof(IDictionary<string, object>));
 
-                if (!isLazy)
-                {
-                    resultType = typeof(IEnumerable<>).MakeGenericType(lazyType);
-                }
-                else
-                {
-                    resultType = lazyType;
-                }
+                resultType = isLazy ? lazyType : typeof(IEnumerable<>).MakeGenericType(lazyType);
 
                 return true;
             }
