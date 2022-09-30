@@ -1,46 +1,43 @@
 ﻿// Copyright (c) Autofac Project. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using Autofac.Features.Metadata;
 using Autofac.Integration.Mef.Test.TestTypes;
-using Xunit;
 
-namespace Autofac.Integration.Mef.Test
+namespace Autofac.Integration.Mef.Test;
+
+public class StronglyTypedMetadataWhenMetadataIsSuppliedTests
 {
-    public class StronglyTypedMetadataWhenMetadataIsSuppliedTests
+    private const int SuppliedValue = 123;
+
+    private readonly IContainer _container;
+
+    public StronglyTypedMetadataWhenMetadataIsSuppliedTests()
     {
-        private const int SuppliedValue = 123;
+        var builder = new ContainerBuilder();
+        builder.RegisterMetadataRegistrationSources();
+        builder.RegisterType<object>().WithMetadata("TheInt", SuppliedValue);
+        _container = builder.Build();
+    }
 
-        private readonly IContainer _container;
+    [Fact]
+    public void ValuesAreProvidedFromMetadata()
+    {
+        var meta = _container.Resolve<Meta<object, IMeta>>();
+        Assert.Equal(SuppliedValue, meta.Metadata.TheInt);
+    }
 
-        public StronglyTypedMetadataWhenMetadataIsSuppliedTests()
-        {
-            var builder = new ContainerBuilder();
-            builder.RegisterMetadataRegistrationSources();
-            builder.RegisterType<object>().WithMetadata("TheInt", SuppliedValue);
-            _container = builder.Build();
-        }
+    [Fact]
+    public void ValuesProvidedFromMetadataOverrideDefaults()
+    {
+        var meta = _container.Resolve<Meta<object, IMetaWithDefault>>();
+        Assert.Equal(SuppliedValue, meta.Metadata.TheInt);
+    }
 
-        [Fact]
-        public void ValuesAreProvidedFromMetadata()
-        {
-            var meta = _container.Resolve<Meta<object, IMeta>>();
-            Assert.Equal((int)SuppliedValue, (int)meta.Metadata.TheInt);
-        }
-
-        [Fact]
-        public void ValuesProvidedFromMetadataOverrideDefaults()
-        {
-            var meta = _container.Resolve<Meta<object, IMetaWithDefault>>();
-            Assert.Equal((int)SuppliedValue, (int)meta.Metadata.TheInt);
-        }
-
-        [Fact]
-        public void ValuesBubbleUpThroughAdapters()
-        {
-            var meta = _container.Resolve<Meta<Func<object>, IMeta>>();
-            Assert.Equal((int)SuppliedValue, (int)meta.Metadata.TheInt);
-        }
+    [Fact]
+    public void ValuesBubbleUpThroughAdapters()
+    {
+        var meta = _container.Resolve<Meta<Func<object>, IMeta>>();
+        Assert.Equal(SuppliedValue, meta.Metadata.TheInt);
     }
 }

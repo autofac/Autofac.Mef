@@ -1,16 +1,15 @@
 // Copyright (c) Autofac Project. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.ComponentModel.Composition;
 
-namespace Autofac.Integration.Mef.Test.TestTypes
-{
-    [MetadataAttribute]
-    public class MetaAttribute : Attribute, IMeta
-    {
-        public MetaAttribute(int value) => TheInt = value;
+namespace Autofac.Integration.Mef.Test.TestTypes;
 
-        public int TheInt { get; private set; }
-    }
+[MetadataAttribute]
+[AttributeUsage(AttributeTargets.Class)]
+public sealed class MetaAttribute : Attribute, IMeta
+{
+    public MetaAttribute(int theInt) => TheInt = theInt;
+
+    public int TheInt { get; private set; }
 }
