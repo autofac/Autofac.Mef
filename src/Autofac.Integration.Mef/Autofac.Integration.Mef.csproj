@@ -15,11 +15,12 @@
     <SignAssembly>true</SignAssembly>
     <NeutralLanguage>en-US</NeutralLanguage>
     <!-- Frameworks and language features -->
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net8.0;net7.0;net6.0;netstandard2.0</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <CodeAnalysisRuleSet>../../build/Analyzers.ruleset</CodeAnalysisRuleSet>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <AnalysisMode>AllEnabledByDefault</AnalysisMode>
     <ImplicitUsings>enable</ImplicitUsings>
     <!-- Packaging -->
@@ -37,11 +38,18 @@
     <EmbedAllSources>true</EmbedAllSources>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <!-- OmniSharp/VS Code resource generation -->
+    <CoreCompileDependsOn>PrepareResources;$(CompileDependsOn)</CoreCompileDependsOn>
   </PropertyGroup>
 
   <ItemGroup>
     <Using Include="System.Diagnostics.CodeAnalysis" />
   </ItemGroup>
+
+  <!-- Disable nullability warnings in netstandard2.0 -->
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <NoWarn>$(NoWarn);8600;8601;8602;8603;8604</NoWarn>
+  </PropertyGroup>
 
   <ItemGroup>
     <None Include="..\..\build\icon.png" Pack="true" PackagePath="\" />
@@ -53,64 +61,40 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Autofac" Version="6.4.0" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" Condition="Exists('$(MSBuildThisFileDirectory)../../.git')">
+    <PackageReference Include="Autofac" Version="8.0.0" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" Condition="Exists('$(MSBuildThisFileDirectory)../../.git')">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.406">
+    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.556">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="System.ComponentModel.Composition" Version="4.5.0" />
+    <PackageReference Include="System.ComponentModel.Composition" Version="8.0.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <!--
-      Magic embedded resource incantation based on https://github.com/dotnet/msbuild/issues/4751
-
-      The EmbeddedResource entry seems to add the Designer files to Compile, so
-      if you don't first remove them from Compile you get warnings about
-      double-including source.
-    -->
-    <Compile Remove="**/*.Designer.cs" />
-    <EmbeddedResource Update="ContractBasedServiceResources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>ContractBasedServiceResources.Designer.cs</LastGenOutput>
-      <StronglyTypedFileName>ContractBasedServiceResources.Designer.cs</StronglyTypedFileName>
+  <ItemDefinitionGroup>
+    <EmbeddedResource>
+      <Generator>MSBuild:Compile</Generator>
       <StronglyTypedLanguage>CSharp</StronglyTypedLanguage>
+      <StronglyTypedFileName>$(IntermediateOutputPath)%(Filename).Designer.cs</StronglyTypedFileName>
+      <StronglyTypedClassName>%(Filename)</StronglyTypedClassName>
+    </EmbeddedResource>
+  </ItemDefinitionGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="ContractBasedServiceResources.resx">
       <StronglyTypedNamespace>Autofac.Integration.Mef</StronglyTypedNamespace>
-      <StronglyTypedClassName>ContractBasedServiceResources</StronglyTypedClassName>
     </EmbeddedResource>
     <EmbeddedResource Update="LazyWithMetadataRegistrationSourceResources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>LazyWithMetadataRegistrationSourceResources.Designer.cs</LastGenOutput>
-      <StronglyTypedFileName>LazyWithMetadataRegistrationSourceResources.Designer.cs</StronglyTypedFileName>
-      <StronglyTypedLanguage>CSharp</StronglyTypedLanguage>
       <StronglyTypedNamespace>Autofac.Integration.Mef</StronglyTypedNamespace>
-      <StronglyTypedClassName>LazyWithMetadataRegistrationSourceResources</StronglyTypedClassName>
     </EmbeddedResource>
     <EmbeddedResource Update="StronglyTypedMetadataRegistrationSourceResources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>StronglyTypedMetadataRegistrationSourceResources.Designer.cs</LastGenOutput>
-      <StronglyTypedFileName>StronglyTypedMetadataRegistrationSourceResources.Designer.cs</StronglyTypedFileName>
-      <StronglyTypedLanguage>CSharp</StronglyTypedLanguage>
       <StronglyTypedNamespace>Autofac.Integration.Mef</StronglyTypedNamespace>
-      <StronglyTypedClassName>StronglyTypedMetadataRegistrationSourceResources</StronglyTypedClassName>
     </EmbeddedResource>
     <EmbeddedResource Update="RegistrationExtensionsResources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>RegistrationExtensionsResources.Designer.cs</LastGenOutput>
-      <StronglyTypedFileName>RegistrationExtensionsResources.Designer.cs</StronglyTypedFileName>
-      <StronglyTypedLanguage>CSharp</StronglyTypedLanguage>
       <StronglyTypedNamespace>Autofac.Integration.Mef</StronglyTypedNamespace>
-      <StronglyTypedClassName>RegistrationExtensionsResources</StronglyTypedClassName>
     </EmbeddedResource>
     <EmbeddedResource Update="Util\ReflectionExtensionsResources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>ReflectionExtensionsResources.Designer.cs</LastGenOutput>
-      <StronglyTypedFileName>Util\ReflectionExtensionsResources.Designer.cs</StronglyTypedFileName>
-      <StronglyTypedLanguage>CSharp</StronglyTypedLanguage>
       <StronglyTypedNamespace>Autofac.Integration.Mef.Util</StronglyTypedNamespace>
-      <StronglyTypedClassName>ReflectionExtensionsResources</StronglyTypedClassName>
     </EmbeddedResource>
   </ItemGroup>
 

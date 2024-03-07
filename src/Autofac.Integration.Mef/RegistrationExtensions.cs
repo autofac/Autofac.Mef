@@ -25,13 +25,13 @@ public static class RegistrationExtensions
     /// Reference to the internal <see cref="Type"/> for <c>System.ComponentModel.Composition.ContractNameServices</c>,
     /// which is responsible for mapping types to MEF contract names.
     /// </summary>
-    private static readonly Type ContractNameServices = typeof(ExportAttribute).Assembly.GetType("System.ComponentModel.Composition.ContractNameServices", true);
+    private static readonly Type ContractNameServices = typeof(ExportAttribute).Assembly.GetType("System.ComponentModel.Composition.ContractNameServices", true)!;
 
     /// <summary>
     /// Reference to the property <c>System.ComponentModel.Composition.ContractNameServices.TypeIdentityCache</c>,
     /// which holds the dictionary of <see cref="Type"/> to <see cref="string"/> contract name mappings.
     /// </summary>
-    private static readonly PropertyInfo TypeIdentityCache = ContractNameServices.GetProperty("TypeIdentityCache", BindingFlags.GetProperty | BindingFlags.Static | BindingFlags.NonPublic);
+    private static readonly PropertyInfo TypeIdentityCache = ContractNameServices.GetProperty("TypeIdentityCache", BindingFlags.GetProperty | BindingFlags.Static | BindingFlags.NonPublic) ?? throw new InvalidOperationException("ContractNameServices.TypeIdentityCache not found.");
 
     /// <summary>
     /// Expose the registered service to MEF parts as an export.
@@ -297,7 +297,7 @@ public static class RegistrationExtensions
         registry.Register(rb.CreateRegistration());
     }
 
-    private static IEnumerable<ServiceRegistration> ComponentsForContract(this IComponentContext context, ContractBasedImportDefinition definition, ContractBasedService contractService)
+    private static List<ServiceRegistration> ComponentsForContract(this IComponentContext context, ContractBasedImportDefinition definition, ContractBasedService contractService)
     {
         var componentsForContract = context
             .ComponentRegistry
@@ -334,15 +334,15 @@ public static class RegistrationExtensions
 
     private static Type FindType(string exportTypeIdentity)
     {
-        var cache = (Dictionary<Type, string>)TypeIdentityCache.GetValue(null, null);
+        var cache = (Dictionary<Type, string>)TypeIdentityCache.GetValue(null, null)!;
         return cache.FirstOrDefault(kvp => kvp.Value == exportTypeIdentity).Key;
     }
 
     private static string GetTypeIdentity(ExportDefinition exportDef)
     {
-        if (exportDef.Metadata.TryGetValue(CompositionConstants.ExportTypeIdentityMetadataName, out object typeIdentity))
+        if (exportDef.Metadata.TryGetValue(CompositionConstants.ExportTypeIdentityMetadataName, out var typeIdentity))
         {
-            return (string)typeIdentity;
+            return typeIdentity!.ToString()!;
         }
 
         return string.Empty;
@@ -358,14 +358,14 @@ public static class RegistrationExtensions
         return IsSharedInstance(export.Metadata);
     }
 
-    private static bool IsSharedInstance(IDictionary<string, object> metadata)
+    private static bool IsSharedInstance(IDictionary<string, object?> metadata)
     {
         if (metadata != null)
         {
-            if (metadata.TryGetValue(CompositionConstants.PartCreationPolicyMetadataName, out object pcp))
+            if (metadata.TryGetValue(CompositionConstants.PartCreationPolicyMetadataName, out var pcp))
             {
                 // Here we use the MEF default of Shared, but using the Autofac default may make more sense.
-                if (pcp != null && (CreationPolicy)pcp == CreationPolicy.NonShared)
+                if (pcp is CreationPolicy policy && policy == CreationPolicy.NonShared)
                 {
                     return false;
                 }
@@ -410,7 +410,7 @@ public static class RegistrationExtensions
 
         if (additionalServices.Length > 0)
         {
-            var additionalRegistration = builder.Register(c => ((Export)c.ResolveService(exportId)).Value)
+            var additionalRegistration = builder.Register(c => ((Export)c.ResolveService(exportId)).Value!)
                         .As(additionalServices)
                         .ExternallyOwned()
                         .WithMetadata(exportDef.Metadata);
@@ -508,8 +508,8 @@ public static class RegistrationExtensions
     {
         if (definition.TryGetLazyType(out var resultType, out var lazyType) && context.TryResolve(resultType, out var resolved))
         {
-            var valueProperty = lazyType.GetProperty("Value");
-            var metaProperty = lazyType.GetProperty("Metadata");
+            var valueProperty = lazyType.GetProperty("Value")!;
+            var metaProperty = lazyType.GetProperty("Metadata")!;
             if (resolved is IEnumerable enumerable)
             {
                 return enumerable
@@ -517,7 +517,7 @@ public static class RegistrationExtensions
                     .Select(
                         r => new Export(
                             definition.ContractName,
-                            metaProperty.GetValue(r) as IDictionary<string, object>,
+                            metaProperty.GetValue(r) as IDictionary<string, object?>,
                             () => valueProperty.GetValue(r)));
             }
 
@@ -525,12 +525,12 @@ public static class RegistrationExtensions
             {
                     new Export(
                         definition.ContractName,
-                        metaProperty.GetValue(resolved) as IDictionary<string, object>,
+                        metaProperty.GetValue(resolved) as IDictionary<string, object?>,
                         () => valueProperty.GetValue(resolved)),
             };
         }
 
-        var contractService = new ContractBasedService(definition.ContractName, definition.RequiredTypeIdentity);
+        var contractService = new ContractBasedService(definition.ContractName, definition.RequiredTypeIdentity!);
 
         var componentsForContract = context.ComponentsForContract(definition, contractService);
 
@@ -599,7 +599,7 @@ public static class RegistrationExtensions
             return true;
         }
 
-        var et = FindType((string)ed.Metadata[CompositionConstants.ExportTypeIdentityMetadataName]);
+        var et = FindType((string)ed.Metadata[CompositionConstants.ExportTypeIdentityMetadataName]!);
         if (et != null)
         {
             service = new KeyedService(ed.ContractName, et);
