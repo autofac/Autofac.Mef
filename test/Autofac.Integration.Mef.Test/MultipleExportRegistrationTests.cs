@@ -18,7 +18,7 @@ public class MultipleExportRegistrationTests
         var container = builder.Build();
         var im = container.Resolve<ImportsMany>();
         Assert.NotNull(im.Dependencies);
-        Assert.False(im.Dependencies.Any());
+        Assert.Empty(im.Dependencies);
     }
 
     [Fact]
