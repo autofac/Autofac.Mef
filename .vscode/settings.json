@@ -5,16 +5,15 @@
     "cref",
     "inheritdoc",
     "langword",
+    "netstandard",
     "paramref",
     "resx",
     "typeparam",
     "typeparamref",
     "xunit"
   ],
-  "dotnet-test-explorer.testProjectPath": "test/**/*Test.csproj",
   "explorer.fileNesting.patterns": {
-    "*.resx": "$(capture).*.resx, $(capture).Designer.cs"
+    "*.resx": "$(capture).*.resx, $(capture).designer.cs, $(capture).designer.vb"
   },
-  "omnisharp.enableEditorConfigSupport": true,
-  "omnisharp.enableRoslynAnalyzers": true
+  "omnisharp.enableEditorConfigSupport": true
 }

@@ -17,7 +17,7 @@ namespace Autofac.Integration.Mef;
 /// </summary>
 internal class StronglyTypedMetadataRegistrationSource : IRegistrationSource
 {
-    private static readonly MethodInfo CreateMetaRegistrationMethod = typeof(StronglyTypedMetadataRegistrationSource).GetMethod("CreateMetaRegistration", BindingFlags.Static | BindingFlags.NonPublic);
+    private static readonly MethodInfo CreateMetaRegistrationMethod = typeof(StronglyTypedMetadataRegistrationSource).GetMethod(nameof(CreateMetaRegistration), BindingFlags.Static | BindingFlags.NonPublic)!;
 
     private delegate IComponentRegistration RegistrationCreator(Service service, ServiceRegistration valueRegistration);
 

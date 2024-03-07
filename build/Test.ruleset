@@ -12,6 +12,8 @@
     <Rule Id="CA1816" Action="None" />
     <!-- Mark members static - test methods may not access member data but also can't be static. -->
     <Rule Id="CA1822" Action="None" />
+    <!-- Seal internal types - performance isn't an issue in test libraries. -->
+    <Rule Id="CA1852" Action="None" />
     <!-- Do not directly await a task - this is for libraries rather than test code. -->
     <Rule Id="CA2007" Action="None" />
     <!-- Implement serialization constructors - false positive when building .NET Core. -->
@@ -38,6 +40,8 @@
     <Rule Id="SA1203" Action="None" />
     <!-- Enforce order of static vs. non-static members -->
     <Rule Id="SA1204" Action="None" />
+    <!-- Modifiers are not ordered - .editorconfig handles this -->
+    <Rule Id="SA1206" Action="None" />
     <!-- Enforce order of readonly vs. non-readonly members -->
     <Rule Id="SA1214" Action="None" />
     <!-- Fields can't start with underscore -->

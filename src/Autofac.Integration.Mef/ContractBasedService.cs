@@ -84,6 +84,7 @@ public class ContractBasedService : Service
     /// <returns>
     /// A hash code for the current <see cref="object"/>.
     /// </returns>
+    [SuppressMessage("CA1307", "CA1307", Justification = "netstandard does not have a string comparison overload for GetHashCode.")]
     public override int GetHashCode()
     {
         return ContractName.GetHashCode() ^ ExportTypeIdentity.GetHashCode();

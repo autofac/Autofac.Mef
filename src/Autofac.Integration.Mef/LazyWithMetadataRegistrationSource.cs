@@ -21,7 +21,7 @@ namespace Autofac.Integration.Mef;
 /// </remarks>
 internal class LazyWithMetadataRegistrationSource : IRegistrationSource
 {
-    private static readonly MethodInfo CreateLazyRegistrationMethod = typeof(LazyWithMetadataRegistrationSource).GetMethod("CreateLazyRegistration", BindingFlags.Static | BindingFlags.NonPublic);
+    private static readonly MethodInfo CreateLazyRegistrationMethod = typeof(LazyWithMetadataRegistrationSource).GetMethod(nameof(CreateLazyRegistration), BindingFlags.Static | BindingFlags.NonPublic)!;
 
     private delegate IComponentRegistration RegistrationCreator(Service service, ServiceRegistration valueRegistration);
 
