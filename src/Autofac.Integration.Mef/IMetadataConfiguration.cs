@@ -11,5 +11,8 @@ public interface IMetadataConfiguration
     /// <summary>
     /// Gets the metadata properties and values.
     /// </summary>
-    IEnumerable<KeyValuePair<string, object>> Properties { get; }
+    IEnumerable<KeyValuePair<string, object>> Properties
+    {
+        get;
+    }
 }

@@ -99,8 +99,8 @@ public class MetadataRegistrationTests
         {
             { "Key", "Value" },
         };
-        const string exportedString = "Hello";
-        builder.RegisterInstance(exportedString).Exported(e => e.As<string>().WithMetadata(metadata));
+        const string ExportedString = "Hello";
+        builder.RegisterInstance(ExportedString).Exported(e => e.As<string>().WithMetadata(metadata));
         using var catalog = new TypeCatalog(typeof(RequiresMetadata));
         builder.RegisterComposablePartCatalog(catalog);
         var container = builder.Build();
@@ -125,28 +125,40 @@ public class MetadataRegistrationTests
     [SuppressMessage("CA1034", "CA1034", Justification = "Metadata classes must be public for MEF.")]
     public interface IRequiredMetadata
     {
-        string Key { get; }
+        string Key
+        {
+            get;
+        }
     }
 
     [Export]
     private class RequiresMetadata
     {
         [Import]
-        public Lazy<string, IRequiredMetadata> Dependency { get; set; }
+        public Lazy<string, IRequiredMetadata> Dependency
+        {
+            get; set;
+        }
     }
 
     [Export]
     private class RequiresMetadataAllowsDefault
     {
         [Import(AllowDefault = true)]
-        public Lazy<string, IRequiredMetadata> Dependency { get; set; }
+        public Lazy<string, IRequiredMetadata> Dependency
+        {
+            get; set;
+        }
     }
 
     [Export]
     private class ImportsMany
     {
         [ImportMany]
-        public Collection<string> Dependencies { get; private set; }
+        public Collection<string> Dependencies
+        {
+            get; private set;
+        }
     }
 
     [SuppressMessage("CA1812", "CA1812", Justification = "Instantiated by dependency injection.")]

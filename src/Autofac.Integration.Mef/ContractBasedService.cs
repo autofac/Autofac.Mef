@@ -39,13 +39,19 @@ public class ContractBasedService : Service
     /// <summary>
     /// Gets the type identity of the objects exported under the contract.
     /// </summary>
-    public string ExportTypeIdentity { get; }
+    public string ExportTypeIdentity
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the name of the contract.
     /// </summary>
     /// <value>The name of the contract.</value>
-    public string ContractName { get; }
+    public string ContractName
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets a human-readable description of the service.
@@ -68,9 +74,7 @@ public class ContractBasedService : Service
     /// </returns>
     public override bool Equals(object? obj)
     {
-        var that = obj as ContractBasedService;
-
-        if (that == null)
+        if (obj is not ContractBasedService that)
         {
             return false;
         }

@@ -21,9 +21,18 @@ namespace Autofac.Integration.Mef;
 /// </remarks>
 internal class LazyWithMetadataRegistrationSource : IRegistrationSource
 {
-    private static readonly MethodInfo CreateLazyRegistrationMethod = typeof(LazyWithMetadataRegistrationSource).GetMethod(nameof(CreateLazyRegistration), BindingFlags.Static | BindingFlags.NonPublic)!;
+    private static readonly MethodInfo _createLazyRegistrationMethod = typeof(LazyWithMetadataRegistrationSource).GetMethod(nameof(CreateLazyRegistration), BindingFlags.Static | BindingFlags.NonPublic)!;
 
     private delegate IComponentRegistration RegistrationCreator(Service service, ServiceRegistration valueRegistration);
+
+    /// <inheritdoc />
+    public bool IsAdapterForIndividualComponents
+    {
+        get
+        {
+            return false;
+        }
+    }
 
     /// <inheritdoc />
     public IEnumerable<IComponentRegistration> RegistrationsFor(Service service, Func<Service, IEnumerable<ServiceRegistration>> registrationAccessor)
@@ -43,19 +52,10 @@ internal class LazyWithMetadataRegistrationSource : IRegistrationSource
         var valueService = swt.ChangeType(valueType);
         var registrationCreator = (RegistrationCreator)Delegate.CreateDelegate(
             typeof(RegistrationCreator),
-            CreateLazyRegistrationMethod.MakeGenericMethod(valueType, metaType));
+            _createLazyRegistrationMethod.MakeGenericMethod(valueType, metaType));
 
         return registrationAccessor(valueService)
             .Select(v => registrationCreator(service, v));
-    }
-
-    /// <inheritdoc />
-    public bool IsAdapterForIndividualComponents
-    {
-        get
-        {
-            return false;
-        }
     }
 
     /// <inheritdoc />

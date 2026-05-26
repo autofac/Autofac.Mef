@@ -25,17 +25,20 @@ public static class RegistrationExtensions
     /// Reference to the internal <see cref="Type"/> for <c>System.ComponentModel.Composition.ContractNameServices</c>,
     /// which is responsible for mapping types to MEF contract names.
     /// </summary>
-    private static readonly Type ContractNameServices = typeof(ExportAttribute).Assembly.GetType("System.ComponentModel.Composition.ContractNameServices", true)!;
+    private static readonly Type _contractNameServices = typeof(ExportAttribute).Assembly.GetType("System.ComponentModel.Composition.ContractNameServices", true)!;
 
     /// <summary>
     /// Reference to the property <c>System.ComponentModel.Composition.ContractNameServices.TypeIdentityCache</c>,
     /// which holds the dictionary of <see cref="Type"/> to <see cref="string"/> contract name mappings.
     /// </summary>
-    private static readonly PropertyInfo TypeIdentityCache = ContractNameServices.GetProperty("TypeIdentityCache", BindingFlags.GetProperty | BindingFlags.Static | BindingFlags.NonPublic) ?? throw new InvalidOperationException("ContractNameServices.TypeIdentityCache not found.");
+    private static readonly PropertyInfo _typeIdentityCache = _contractNameServices.GetProperty("TypeIdentityCache", BindingFlags.GetProperty | BindingFlags.Static | BindingFlags.NonPublic) ?? throw new InvalidOperationException("ContractNameServices.TypeIdentityCache not found.");
 
     /// <summary>
     /// Expose the registered service to MEF parts as an export.
     /// </summary>
+    /// <typeparam name="TLimit">The type of the instance being registered.</typeparam>
+    /// <typeparam name="TActivatorData">The type of the activator data.</typeparam>
+    /// <typeparam name="TSingleRegistrationStyle">The type of the registration style.</typeparam>
     /// <param name="registration">The component being registered.</param>
     /// <param name="configurationAction">Action on an object that configures the export.</param>
     /// <returns>A registration allowing registration to continue.</returns>
@@ -260,8 +263,9 @@ public static class RegistrationExtensions
     /// <summary>
     /// Locate all of the MEF exports registered as supplying contract type T.
     /// </summary>
-    /// <param name="contractName">The contract name.</param>
+    /// <typeparam name="T">The contract type.</typeparam>
     /// <param name="context">The context to resolve exports from.</param>
+    /// <param name="contractName">The contract name.</param>
     /// <returns>A list of exports.</returns>
     public static IEnumerable<Export> ResolveExports<T>(this IComponentContext context, string contractName)
     {
@@ -326,7 +330,7 @@ public static class RegistrationExtensions
 
     private static IEnumerable<Service> DefaultExposedServicesMapper(ExportDefinition ed)
     {
-        if (TryMapService(ed, out Service? service))
+        if (TryMapService(ed, out var service))
         {
             yield return service;
         }
@@ -334,7 +338,7 @@ public static class RegistrationExtensions
 
     private static Type FindType(string exportTypeIdentity)
     {
-        var cache = (Dictionary<Type, string>)TypeIdentityCache.GetValue(null, null)!;
+        var cache = (Dictionary<Type, string>)_typeIdentityCache.GetValue(null, null)!;
         return cache.FirstOrDefault(kvp => kvp.Value == exportTypeIdentity).Key;
     }
 

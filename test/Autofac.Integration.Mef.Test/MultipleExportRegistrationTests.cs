@@ -61,6 +61,9 @@ public class MultipleExportRegistrationTests
     private class ImportsMany
     {
         [ImportMany]
-        public List<string> Dependencies { get; set; }
+        public List<string> Dependencies
+        {
+            get; set;
+        }
     }
 }
