@@ -68,14 +68,20 @@ public class CircularDependencyRegistrationTests
             B = b;
         }
 
-        public Lazy<LazyCircularB> B { get; private set; }
+        public Lazy<LazyCircularB> B
+        {
+            get; private set;
+        }
     }
 
     [Export]
     private class LazyCircularB
     {
         [Import]
-        public Lazy<LazyCircularA> A { get; set; }
+        public Lazy<LazyCircularA> A
+        {
+            get; set;
+        }
     }
 
     /* Non-lazy circular dependencies in MEF have to be done with
@@ -86,13 +92,19 @@ public class CircularDependencyRegistrationTests
     private class EagerCircularA
     {
         [Import]
-        public EagerCircularB B { get; private set; }
+        public EagerCircularB B
+        {
+            get; private set;
+        }
     }
 
     [Export]
     private class EagerCircularB
     {
         [Import]
-        public EagerCircularA A { get; set; }
+        public EagerCircularA A
+        {
+            get; set;
+        }
     }
 }

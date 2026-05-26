@@ -54,7 +54,10 @@ public class GenericExportRegistrationTests
     private class TestConsumer
     {
         [Import]
-        public ITest<IT1> Property { get; set; }
+        public ITest<IT1> Property
+        {
+            get; set;
+        }
     }
 
     [Export(typeof(OpenGenericExport<>))]

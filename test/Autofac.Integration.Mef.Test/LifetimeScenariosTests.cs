@@ -101,7 +101,10 @@ public class LifetimeScenariosTests
     [SuppressMessage("CA1812", "CA1812", Justification = "Instantiated by dependency injection.")]
     private class RegisteredInAutofac
     {
-        public ExportedToMefAndImportingFromAutofac ImportedFormMef { get; set; }
+        public ExportedToMefAndImportingFromAutofac ImportedFormMef
+        {
+            get; set;
+        }
 
         public RegisteredInAutofac(ExportedToMefAndImportingFromAutofac importedFormMef)
         {
@@ -114,7 +117,10 @@ public class LifetimeScenariosTests
     private class ExportedToMefAndImportingFromAutofac
     {
         [Import]
-        public RegisteredInAutofacAndExported ImportedFormAutofac { get; set; }
+        public RegisteredInAutofacAndExported ImportedFormAutofac
+        {
+            get; set;
+        }
     }
 
     [SuppressMessage("CA1812", "CA1812", Justification = "Instantiated by dependency injection.")]

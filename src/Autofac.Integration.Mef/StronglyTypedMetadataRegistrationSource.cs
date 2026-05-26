@@ -17,7 +17,7 @@ namespace Autofac.Integration.Mef;
 /// </summary>
 internal class StronglyTypedMetadataRegistrationSource : IRegistrationSource
 {
-    private static readonly MethodInfo CreateMetaRegistrationMethod = typeof(StronglyTypedMetadataRegistrationSource).GetMethod(nameof(CreateMetaRegistration), BindingFlags.Static | BindingFlags.NonPublic)!;
+    private static readonly MethodInfo _createMetaRegistrationMethod = typeof(StronglyTypedMetadataRegistrationSource).GetMethod(nameof(CreateMetaRegistration), BindingFlags.Static | BindingFlags.NonPublic)!;
 
     private delegate IComponentRegistration RegistrationCreator(Service service, ServiceRegistration valueRegistration);
 
@@ -48,7 +48,7 @@ internal class StronglyTypedMetadataRegistrationSource : IRegistrationSource
         var valueService = swt.ChangeType(valueType);
         var registrationCreator = (RegistrationCreator)Delegate.CreateDelegate(
             typeof(RegistrationCreator),
-            CreateMetaRegistrationMethod.MakeGenericMethod(valueType, metaType));
+            _createMetaRegistrationMethod.MakeGenericMethod(valueType, metaType));
 
         return registrationAccessor(valueService)
             .Select(v => registrationCreator.Invoke(service, v));

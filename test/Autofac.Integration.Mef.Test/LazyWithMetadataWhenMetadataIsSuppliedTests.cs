@@ -28,7 +28,10 @@ public class LazyWithMetadataWhenMetadataIsSuppliedTests
     [SuppressMessage("CA1034", "CA1034", Justification = "Metadata classes must be public for MEF.")]
     public interface INameMetadata
     {
-        string Name { get; }
+        string Name
+        {
+            get;
+        }
     }
 
     internal interface IService
@@ -110,7 +113,10 @@ public class LazyWithMetadataWhenMetadataIsSuppliedTests
     internal class ServiceConsumer
     {
         [ImportMany]
-        public IEnumerable<Lazy<IService, INameMetadata>> Services { get; set; }
+        public IEnumerable<Lazy<IService, INameMetadata>> Services
+        {
+            get; set;
+        }
     }
 
     [Export]
@@ -122,14 +128,20 @@ public class LazyWithMetadataWhenMetadataIsSuppliedTests
             Services = services;
         }
 
-        public IEnumerable<Lazy<IService, INameMetadata>> Services { get; }
+        public IEnumerable<Lazy<IService, INameMetadata>> Services
+        {
+            get;
+        }
     }
 
     [Export]
     internal class SingleServiceConsumer
     {
         [Import]
-        public Lazy<ThrowingService, INameMetadata> Service { get; set; }
+        public Lazy<ThrowingService, INameMetadata> Service
+        {
+            get; set;
+        }
     }
 
     [Export(typeof(IService))]

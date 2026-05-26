@@ -11,5 +11,8 @@ public sealed class MetaAttribute : Attribute, IMeta
 {
     public MetaAttribute(int theInt) => TheInt = theInt;
 
-    public int TheInt { get; private set; }
+    public int TheInt
+    {
+        get; private set;
+    }
 }

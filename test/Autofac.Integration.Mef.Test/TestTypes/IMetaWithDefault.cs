@@ -8,5 +8,8 @@ namespace Autofac.Integration.Mef.Test.TestTypes;
 public interface IMetaWithDefault
 {
     [DefaultValue(42)]
-    int TheInt { get; }
+    int TheInt
+    {
+        get;
+    }
 }

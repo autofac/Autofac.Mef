@@ -16,7 +16,7 @@ public class DynamicTypeExportRegistrationTests
         var builder = new ContainerBuilder();
         using var catalog = new TypeCatalog(typeof(ImportManyDependency));
         builder.RegisterComposablePartCatalog(catalog);
-        foreach (Type type in Assembly.GetExecutingAssembly().GetTypes().Where(type =>
+        foreach (var type in Assembly.GetExecutingAssembly().GetTypes().Where(type =>
             typeof(IAutofacDependency).IsAssignableFrom(type) && !type.IsInterface))
         {
             builder.RegisterType(type).Exported(x => x.As(typeof(IAutofacDependency)));
@@ -33,33 +33,33 @@ public class DynamicTypeExportRegistrationTests
         var builder = new ContainerBuilder();
         using var catalog = new TypeCatalog(typeof(ImportWithMetadataDependency));
         builder.RegisterComposablePartCatalog(catalog);
-        const int metaInt = 10;
-        foreach (Type type in Assembly.GetExecutingAssembly().GetTypes().Where(type =>
+        const int MetaInt = 10;
+        foreach (var type in Assembly.GetExecutingAssembly().GetTypes().Where(type =>
             Attribute.GetCustomAttribute(type, typeof(ExportFromAutofacAttribute)) != null))
         {
-            builder.RegisterType(type).Exported(x => x.As(type).WithMetadata("TheInt", metaInt));
+            builder.RegisterType(type).Exported(x => x.As(type).WithMetadata("TheInt", MetaInt));
         }
 
         var container = builder.Build();
         var resolve = container.Resolve<ImportWithMetadataDependency>();
         Assert.NotNull(resolve);
         Assert.NotNull(resolve.Dependency.Value);
-        Assert.Equal(metaInt, resolve.Dependency.Metadata.TheInt);
+        Assert.Equal(MetaInt, resolve.Dependency.Metadata.TheInt);
     }
 
     [Fact]
     public void RestrictsExportsBasedOnValueType()
     {
         var builder = new ContainerBuilder();
-        const string n = "name";
-        foreach (Type type in Assembly.GetExecutingAssembly().GetTypes().Where(type =>
+        const string N = "name";
+        foreach (var type in Assembly.GetExecutingAssembly().GetTypes().Where(type =>
             Attribute.GetCustomAttribute(type, typeof(ExportFromAutofacAttribute)) != null))
         {
-            builder.RegisterType(type).Exported(x => x.AsNamed(type, n));
+            builder.RegisterType(type).Exported(x => x.AsNamed(type, N));
         }
 
         var container = builder.Build();
-        var exports = container.ResolveExports<IAutofacDependency>(n);
+        var exports = container.ResolveExports<IAutofacDependency>(N);
         Assert.Empty(exports);
     }
 
@@ -69,7 +69,7 @@ public class DynamicTypeExportRegistrationTests
         var builder = new ContainerBuilder();
         using var catalog = new TypeCatalog(typeof(ImportsDuplicateAutofacDependency));
         builder.RegisterComposablePartCatalog(catalog);
-        foreach (Type type in Assembly.GetExecutingAssembly().GetTypes().Where(type =>
+        foreach (var type in Assembly.GetExecutingAssembly().GetTypes().Where(type =>
             Attribute.GetCustomAttribute(type, typeof(ExportFromAutofacAttribute)) != null))
         {
             builder.RegisterType(type).Exported(x => x.As(type));
@@ -87,7 +87,7 @@ public class DynamicTypeExportRegistrationTests
         var builder = new ContainerBuilder();
         using var catalog = new TypeCatalog(typeof(ImportsDuplicateAutofacDependency));
         builder.RegisterComposablePartCatalog(catalog);
-        foreach (Type type in Assembly.GetExecutingAssembly().GetTypes().Where(type =>
+        foreach (var type in Assembly.GetExecutingAssembly().GetTypes().Where(type =>
             typeof(IAutofacDependency).IsAssignableFrom(type) && !type.IsInterface))
         {
             builder.RegisterType(type).Exported(x => x.As(type));
@@ -105,7 +105,7 @@ public class DynamicTypeExportRegistrationTests
         var builder = new ContainerBuilder();
         using var catalog = new TypeCatalog(typeof(ImportsMixedAutofacMefDependency), typeof(MefDependency));
         builder.RegisterComposablePartCatalog(catalog);
-        foreach (Type type in Assembly.GetExecutingAssembly().GetTypes().Where(type =>
+        foreach (var type in Assembly.GetExecutingAssembly().GetTypes().Where(type =>
             Attribute.GetCustomAttribute(type, typeof(ExportFromAutofacAttribute)) != null))
         {
             builder.RegisterType(type).Exported(x => x.As(type));
@@ -146,22 +146,34 @@ public class DynamicTypeExportRegistrationTests
     private class ImportManyDependency
     {
         [ImportMany]
-        public IEnumerable<IAutofacDependency> Dependencies { get; set; }
+        public IEnumerable<IAutofacDependency> Dependencies
+        {
+            get; set;
+        }
     }
 
     [Export]
     private class ImportWithMetadataDependency
     {
         [Import]
-        public Lazy<ExportFromAutofacDependencyB, IMetaWithDefault> Dependency { get; set; }
+        public Lazy<ExportFromAutofacDependencyB, IMetaWithDefault> Dependency
+        {
+            get; set;
+        }
     }
 
     [Export]
     private class ImportsDuplicateAutofacDependency
     {
-        public ExportFromAutofacDependencyA First { get; }
+        public ExportFromAutofacDependencyA First
+        {
+            get;
+        }
 
-        public ExportFromAutofacDependencyB Second { get; }
+        public ExportFromAutofacDependencyB Second
+        {
+            get;
+        }
 
         [ImportingConstructor]
         public ImportsDuplicateAutofacDependency(ExportFromAutofacDependencyA first, ExportFromAutofacDependencyB second)
@@ -174,9 +186,15 @@ public class DynamicTypeExportRegistrationTests
     [Export]
     private class ImportsMixedAutofacMefDependency
     {
-        public ExportFromAutofacDependencyA First { get; }
+        public ExportFromAutofacDependencyA First
+        {
+            get;
+        }
 
-        public IDependency Second { get; }
+        public IDependency Second
+        {
+            get;
+        }
 
         [ImportingConstructor]
         public ImportsMixedAutofacMefDependency(ExportFromAutofacDependencyA first, IDependency second)

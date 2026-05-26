@@ -69,11 +69,11 @@ public class SimpleRegistrationTests
     public void RestrictsExportsBasedOnValueType()
     {
         var builder = new ContainerBuilder();
-        const string n = "name";
-        builder.RegisterType<MefDependency>().Exported(e => e.AsNamed<IDependency>(n));
-        builder.RegisterType<MefDependency>().Exported(e => e.AsNamed<MefDependency>(n));
+        const string N = "name";
+        builder.RegisterType<MefDependency>().Exported(e => e.AsNamed<IDependency>(N));
+        builder.RegisterType<MefDependency>().Exported(e => e.AsNamed<MefDependency>(N));
         var container = builder.Build();
-        var exports = container.ResolveExports<IDependency>(n);
+        var exports = container.ResolveExports<IDependency>(N);
         Assert.Single(exports);
     }
 
@@ -119,14 +119,20 @@ public class SimpleRegistrationTests
             Dependency = dependency;
         }
 
-        public IDependency Dependency { get; private set; }
+        public IDependency Dependency
+        {
+            get; private set;
+        }
     }
 
     [Export]
     private class HasMissingDependency
     {
         [Import]
-        public string Dependency { get; set; }
+        public string Dependency
+        {
+            get; set;
+        }
     }
 
     private class ObjectExportBaseClass
@@ -142,15 +148,24 @@ public class SimpleRegistrationTests
     private class ObjectExportImporter
     {
         [Import("contract-name")]
-        public object Item { get; set; }
+        public object Item
+        {
+            get; set;
+        }
     }
 
     [SuppressMessage("CA1812", "CA1812", Justification = "Instantiated by dependency injection.")]
     private class ImportsDuplicateMefClass
     {
-        public ImportsMefDependency First { get; set; }
+        public ImportsMefDependency First
+        {
+            get; set;
+        }
 
-        public ImportsMefDependency Second { get; set; }
+        public ImportsMefDependency Second
+        {
+            get; set;
+        }
 
         public ImportsDuplicateMefClass(ImportsMefDependency first, ImportsMefDependency second)
         {
