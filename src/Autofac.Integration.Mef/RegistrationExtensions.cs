@@ -364,16 +364,11 @@ public static class RegistrationExtensions
 
     private static bool IsSharedInstance(IDictionary<string, object?> metadata)
     {
-        if (metadata != null)
+        if (metadata != null &&
+            metadata.TryGetValue(CompositionConstants.PartCreationPolicyMetadataName, out var pcp) &&
+            pcp is CreationPolicy policy && policy == CreationPolicy.NonShared)
         {
-            if (metadata.TryGetValue(CompositionConstants.PartCreationPolicyMetadataName, out var pcp))
-            {
-                // Here we use the MEF default of Shared, but using the Autofac default may make more sense.
-                if (pcp is CreationPolicy policy && policy == CreationPolicy.NonShared)
-                {
-                    return false;
-                }
-            }
+            return false;
         }
 
         return true;
