@@ -364,16 +364,11 @@ public static class RegistrationExtensions
 
     private static bool IsSharedInstance(IDictionary<string, object?> metadata)
     {
-        if (metadata != null)
+        if (metadata != null &&
+            metadata.TryGetValue(CompositionConstants.PartCreationPolicyMetadataName, out var pcp) &&
+            pcp is CreationPolicy policy && policy == CreationPolicy.NonShared)
         {
-            if (metadata.TryGetValue(CompositionConstants.PartCreationPolicyMetadataName, out var pcp))
-            {
-                // Here we use the MEF default of Shared, but using the Autofac default may make more sense.
-                if (pcp is CreationPolicy policy && policy == CreationPolicy.NonShared)
-                {
-                    return false;
-                }
-            }
+            return false;
         }
 
         return true;
@@ -428,84 +423,104 @@ public static class RegistrationExtensions
 
     private static bool TryGetLazyType(this ContractBasedImportDefinition definition, [NotNullWhen(true)] out Type? resultType, [NotNullWhen(true)] out Type? lazyType)
     {
-        // There are a couple of classes that are internal that provide us some information we can use to
-        // properly gauge if we need to do our lazy activation or not.
-        var definitionType = definition.GetType();
-        LazyMemberInfo? lazyMemberInfo = null;
         resultType = null;
         lazyType = null;
-        switch (definitionType.Name)
+
+        if (!TryGetImportResultType(definition, out var importResultType))
+        {
+            return false;
+        }
+
+        if (!TryTransformLazyTypes(importResultType, out var transformedResultType, out var transformedLazyType))
+        {
+            return false;
+        }
+
+        resultType = transformedResultType;
+        lazyType = transformedLazyType;
+        return true;
+    }
+
+    private static bool TryGetImportResultType(ContractBasedImportDefinition definition, [NotNullWhen(true)] out Type? resultType)
+    {
+        // There are a couple of classes that are internal that provide us some information we can use to
+        // properly gauge if we need to do our lazy activation or not.
+        resultType = null;
+
+        switch (definition.GetType().Name)
         {
             // The first case is the base class of the second case for both of these pairs.
             case "ReflectionMemberImportDefinition":
             case "PartCreatorMemberImportDefinition":
-                lazyMemberInfo = ReflectionModelServices.GetImportingMember(definition);
-                break;
+                return TryGetResultTypeFromMember(definition, out resultType);
             case "ReflectionParameterImportDefinition":
             case "PartCreatorParameterImportDefinition":
                 resultType = ReflectionModelServices.GetImportingParameter(definition)?.Value?.ParameterType;
-                break;
+                return resultType != null;
             default:
                 return false;
         }
+    }
 
-        if (lazyMemberInfo.HasValue)
+    private static bool TryGetResultTypeFromMember(ContractBasedImportDefinition definition, [NotNullWhen(true)] out Type? resultType)
+    {
+        resultType = null;
+        var lazyMemberInfo = ReflectionModelServices.GetImportingMember(definition);
+        foreach (var accessor in lazyMemberInfo.GetAccessors())
         {
-            foreach (var accessor in lazyMemberInfo.Value.GetAccessors())
+            if (accessor is MethodInfo methodInfo)
             {
-                if (accessor is MethodInfo methodInfo)
+                // This is either a getter or a setter.
+                resultType = methodInfo.ReturnType;
+                if (resultType == typeof(void))
                 {
-                    // This is either a getter or a setter.
-                    resultType = methodInfo.ReturnType;
-                    if (resultType == typeof(void))
-                    {
-                        resultType = methodInfo.GetParameters()[0].ParameterType;
-                    }
+                    resultType = methodInfo.GetParameters()[0].ParameterType;
+                }
 
-                    break;
-                }
-                else if (accessor is FieldInfo fieldInfo)
-                {
-                    resultType = fieldInfo.FieldType;
-                    break;
-                }
+                return true;
             }
-        }
 
-        if (resultType != null)
-        {
-            // Have to handle 2 cases
-            // Single cardinality = Lazy<T, TMetadata>
-            // Multiple cardinality = IEnumerable<Lazy<T, TMetadata>>
-            bool isLazy;
-            if (
-                 (isLazy = resultType.IsGenericTypeDefinedBy(typeof(Lazy<,>)))
-                   ||
-                 (
-                   resultType.IsGenericTypeDefinedBy(typeof(IEnumerable<>))
-                     &&
-                   resultType.GetGenericArguments()[0].IsGenericTypeDefinedBy(typeof(Lazy<,>))))
+            if (accessor is FieldInfo fieldInfo)
             {
-                lazyType = isLazy ? resultType : resultType.GetGenericArguments()[0];
-                var objectType = lazyType.GetGenericArguments()[0];
-
-                // Resolve as Lazy<T, IDictionary<string, object>> so we can leverage the Metadata value to populate
-                // the metadata on the Exports built later.
-                // If we do not change the type here, we end up losing the name/value pairs so the resulting
-                // Metadata will not be populated
-                lazyType = lazyType
-                    .GetGenericTypeDefinition()
-                    .MakeGenericType(objectType, typeof(IDictionary<string, object>));
-
-                resultType = isLazy ? lazyType : typeof(IEnumerable<>).MakeGenericType(lazyType);
-
+                resultType = fieldInfo.FieldType;
                 return true;
             }
         }
 
+        return false;
+    }
+
+    private static bool TryTransformLazyTypes(Type importResultType, [NotNullWhen(true)] out Type? resultType, [NotNullWhen(true)] out Type? lazyType)
+    {
         resultType = null;
         lazyType = null;
-        return false;
+
+        // Have to handle 2 cases
+        // Single cardinality = Lazy<T, TMetadata>
+        // Multiple cardinality = IEnumerable<Lazy<T, TMetadata>>
+        var isLazy = importResultType.IsGenericTypeDefinedBy(typeof(Lazy<,>));
+        var isEnumerableOfLazy = importResultType.IsGenericTypeDefinedBy(typeof(IEnumerable<>))
+            && importResultType.GetGenericArguments()[0].IsGenericTypeDefinedBy(typeof(Lazy<,>));
+
+        if (!isLazy && !isEnumerableOfLazy)
+        {
+            return false;
+        }
+
+        var currentLazyType = isLazy ? importResultType : importResultType.GetGenericArguments()[0];
+        var objectType = currentLazyType.GetGenericArguments()[0];
+
+        // Resolve as Lazy<T, IDictionary<string, object>> so we can leverage the Metadata value to populate
+        // the metadata on the Exports built later.
+        // If we do not change the type here, we end up losing the name/value pairs so the resulting
+        // Metadata will not be populated
+        lazyType = currentLazyType
+            .GetGenericTypeDefinition()
+            .MakeGenericType(objectType, typeof(IDictionary<string, object>));
+
+        resultType = isLazy ? lazyType : typeof(IEnumerable<>).MakeGenericType(lazyType);
+
+        return true;
     }
 
     private static IEnumerable<Export> ResolveExports(this IComponentContext context, ContractBasedImportDefinition definition)
