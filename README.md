@@ -2,7 +2,7 @@
 
 Managed Extensibility Framework (MEF) integration for [Autofac](https://autofac.org).
 
-[![Build status](https://github.com/autofac/Autofac.Mef/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/autofac/Autofac.Mef/actions/workflows/ci.yml)
+[![Build status](https://github.com/autofac/Autofac.Mef/actions/workflows/main.yml/badge.svg)](https://github.com/autofac/Autofac.Mef/actions/workflows/main.yml) [![codecov](https://codecov.io/gh/Autofac/Autofac.Mef/branch/develop/graph/badge.svg)](https://codecov.io/gh/Autofac/Autofac.Mef) [![NuGet](https://img.shields.io/nuget/v/Autofac.Mef.svg)](https://nuget.org/packages/Autofac.Mef)
 
 Please file issues and pull requests for this package [in this repository](https://github.com/autofac/Autofac.Mef/issues) rather than in the Autofac core repo.
 
@@ -15,7 +15,7 @@ Please file issues and pull requests for this package [in this repository](https
 
 The Autofac/MEF integration allows MEF catalogs to be registered with the `ContainerBuilder` using the `RegisterComposablePartCatalog()` extension method. If you register a component using MEF and want to provide Autofac components into that MEF component, use the `Exported()` extension.
 
-```c#
+```csharp
 var builder = new ContainerBuilder();
 var catalog = new DirectoryCatalog(@"C:\MyExtensions");
 builder.RegisterComposablePartCatalog(catalog);
