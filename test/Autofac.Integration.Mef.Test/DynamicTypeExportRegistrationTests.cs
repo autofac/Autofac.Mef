@@ -24,6 +24,7 @@ public class DynamicTypeExportRegistrationTests
 
         var container = builder.Build();
         var resolve = container.Resolve<ImportManyDependency>();
+        Assert.NotNull(resolve.Dependencies);
         Assert.Equal(2, resolve.Dependencies.Count());
     }
 
@@ -43,8 +44,8 @@ public class DynamicTypeExportRegistrationTests
         var container = builder.Build();
         var resolve = container.Resolve<ImportWithMetadataDependency>();
         Assert.NotNull(resolve);
-        Assert.NotNull(resolve.Dependency.Value);
-        Assert.Equal(MetaInt, resolve.Dependency.Metadata.TheInt);
+        Assert.NotNull(resolve.Dependency?.Value);
+        Assert.Equal(MetaInt, resolve.Dependency?.Metadata.TheInt);
     }
 
     [Fact]
@@ -146,7 +147,7 @@ public class DynamicTypeExportRegistrationTests
     private class ImportManyDependency
     {
         [ImportMany]
-        public IEnumerable<IAutofacDependency> Dependencies
+        public IEnumerable<IAutofacDependency>? Dependencies
         {
             get; set;
         }
@@ -156,7 +157,7 @@ public class DynamicTypeExportRegistrationTests
     private class ImportWithMetadataDependency
     {
         [Import]
-        public Lazy<ExportFromAutofacDependencyB, IMetaWithDefault> Dependency
+        public Lazy<ExportFromAutofacDependencyB, IMetaWithDefault>? Dependency
         {
             get; set;
         }

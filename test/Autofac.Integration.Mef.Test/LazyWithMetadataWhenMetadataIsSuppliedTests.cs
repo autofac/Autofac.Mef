@@ -4,6 +4,7 @@
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Reflection;
+using Autofac.Core;
 using Autofac.Integration.Mef.Test.TestTypes;
 
 namespace Autofac.Integration.Mef.Test;
@@ -43,6 +44,7 @@ public class LazyWithMetadataWhenMetadataIsSuppliedTests
     {
         // Issue #1: Lazy dependencies shouldn't be instantiated in the Lazy<T, TMetadata> relationship.
         var serviceConsumer = _container.Resolve<ServiceConsumer>();
+        Assert.NotNull(serviceConsumer.Services);
         Assert.Equal(2, serviceConsumer.Services.Count());
         var service = serviceConsumer.Services?.FirstOrDefault(x => x.Metadata.Name == "will-throw-on-ctor");
         Assert.NotNull(service);
@@ -68,6 +70,7 @@ public class LazyWithMetadataWhenMetadataIsSuppliedTests
     public void InstanceShouldNotBeCreatedWithSingle()
     {
         var serviceConsumer = _container.Resolve<SingleServiceConsumer>();
+        Assert.NotNull(serviceConsumer.Service);
         Assert.False(serviceConsumer.Service.IsValueCreated);
     }
 
@@ -113,7 +116,7 @@ public class LazyWithMetadataWhenMetadataIsSuppliedTests
     internal class ServiceConsumer
     {
         [ImportMany]
-        public IEnumerable<Lazy<IService, INameMetadata>> Services
+        public IEnumerable<Lazy<IService, INameMetadata>>? Services
         {
             get; set;
         }
@@ -138,7 +141,7 @@ public class LazyWithMetadataWhenMetadataIsSuppliedTests
     internal class SingleServiceConsumer
     {
         [Import]
-        public Lazy<ThrowingService, INameMetadata> Service
+        public Lazy<ThrowingService, INameMetadata>? Service
         {
             get; set;
         }

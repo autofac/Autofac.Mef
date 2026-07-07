@@ -129,7 +129,7 @@ public class SimpleRegistrationTests
     private class HasMissingDependency
     {
         [Import]
-        public string Dependency
+        public string? Dependency
         {
             get; set;
         }
@@ -148,7 +148,7 @@ public class SimpleRegistrationTests
     private class ObjectExportImporter
     {
         [Import("contract-name")]
-        public object Item
+        public object? Item
         {
             get; set;
         }

@@ -135,7 +135,7 @@ public class MetadataRegistrationTests
     private class RequiresMetadata
     {
         [Import]
-        public Lazy<string, IRequiredMetadata> Dependency
+        public Lazy<string, IRequiredMetadata>? Dependency
         {
             get; set;
         }
@@ -145,7 +145,7 @@ public class MetadataRegistrationTests
     private class RequiresMetadataAllowsDefault
     {
         [Import(AllowDefault = true)]
-        public Lazy<string, IRequiredMetadata> Dependency
+        public Lazy<string, IRequiredMetadata>? Dependency
         {
             get; set;
         }
@@ -155,7 +155,7 @@ public class MetadataRegistrationTests
     private class ImportsMany
     {
         [ImportMany]
-        public Collection<string> Dependencies
+        public Collection<string>? Dependencies
         {
             get; private set;
         }

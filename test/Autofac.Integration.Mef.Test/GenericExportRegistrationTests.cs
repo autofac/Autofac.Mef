@@ -54,7 +54,7 @@ public class GenericExportRegistrationTests
     private class TestConsumer
     {
         [Import]
-        public ITest<IT1> Property
+        public ITest<IT1>? Property
         {
             get; set;
         }

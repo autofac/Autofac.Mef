@@ -15,6 +15,8 @@ public class CircularDependencyRegistrationTests
         var a = container.Resolve<LazyCircularA>();
         Assert.NotNull(a);
         Assert.NotNull(a.B);
+        Assert.NotNull(a.B.Value);
+        Assert.NotNull(a.B.Value.A);
         Assert.Same(a, a.B.Value.A.Value);
     }
 
@@ -44,6 +46,7 @@ public class CircularDependencyRegistrationTests
         var a = container.Resolve<EagerCircularA>();
         Assert.NotNull(a);
         Assert.NotNull(a.B);
+        Assert.NotNull(a.B.A);
         Assert.Same(a, a.B.A);
         Assert.Same(a.B, a.B.A.B);
     }
@@ -55,6 +58,7 @@ public class CircularDependencyRegistrationTests
         var b = container.Resolve<EagerCircularB>();
         Assert.NotNull(b);
         Assert.NotNull(b.A);
+        Assert.NotNull(b.A.B);
         Assert.Same(b, b.A.B);
         Assert.Same(b.A, b.A.B.A);
     }
@@ -78,7 +82,7 @@ public class CircularDependencyRegistrationTests
     private class LazyCircularB
     {
         [Import]
-        public Lazy<LazyCircularA> A
+        public Lazy<LazyCircularA>? A
         {
             get; set;
         }
@@ -92,7 +96,7 @@ public class CircularDependencyRegistrationTests
     private class EagerCircularA
     {
         [Import]
-        public EagerCircularB B
+        public EagerCircularB? B
         {
             get; private set;
         }
@@ -102,7 +106,7 @@ public class CircularDependencyRegistrationTests
     private class EagerCircularB
     {
         [Import]
-        public EagerCircularA A
+        public EagerCircularA? A
         {
             get; set;
         }

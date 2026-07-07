@@ -29,7 +29,7 @@ public class LifetimeScenariosTests
 
         Assert.NotSame(elementFromAutofac1, elementFromAutofac2);
         Assert.NotSame(elementFromAutofac1.ImportedFormMef, elementFromAutofac2.ImportedFormMef);
-        Assert.NotSame(elementFromAutofac1.ImportedFormMef.ImportedFormAutofac, elementFromAutofac2.ImportedFormMef.ImportedFormAutofac);
+        Assert.NotSame(elementFromAutofac1.ImportedFormMef.ImportedFromAutofac, elementFromAutofac2.ImportedFormMef.ImportedFromAutofac);
     }
 
     [Fact]
@@ -117,7 +117,7 @@ public class LifetimeScenariosTests
     private class ExportedToMefAndImportingFromAutofac
     {
         [Import]
-        public RegisteredInAutofacAndExported ImportedFormAutofac
+        public RegisteredInAutofacAndExported? ImportedFromAutofac
         {
             get; set;
         }
